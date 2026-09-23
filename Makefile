@@ -29,9 +29,10 @@ setup: ## Install everything in user space (venv, node, ollama, models, UI deps,
 	@scripts/runtime.sh start
 	@OLLAMA_HOST=127.0.0.1:11434 .runtime/ollama/bin/ollama pull $(LOCAL_MODEL)
 	@OLLAMA_HOST=127.0.0.1:11434 .runtime/ollama/bin/ollama pull $(LARGE_MODEL)
-	@$(HF) $(PY) -c "from sentence_transformers import SentenceTransformer, CrossEncoder; SentenceTransformer('BAAI/bge-small-en-v1.5'); CrossEncoder('cross-encoder/nli-deberta-v3-base')"
-	@cd frontend && $(NPM) install --silent
 	@$(PY) scripts/bootstrap_keys.py
+	@cd frontend && $(NPM) install --silent
+	@# download-only: load on CPU so setup never needs a GPU context
+	@$(HF) CUDA_VISIBLE_DEVICES="" $(PY) -c "from sentence_transformers import SentenceTransformer, CrossEncoder; SentenceTransformer('BAAI/bge-small-en-v1.5', device='cpu'); CrossEncoder('cross-encoder/nli-deberta-v3-base', device='cpu')"
 	@echo "setup complete — run: make doctor"
 
 seed-data: ## Download public datasets (MMLU, GSM8K, PAWS, CISA KEV) with provenance + synthetic security data
@@ -46,6 +47,7 @@ train-router: ## Train + calibrate the router; select threshold on validation; s
 	@cd bench && ../$(PY) train_router.py
 
 build-ui: ## Production build of the dashboard (served by the gateway)
+	@test -d frontend/node_modules || (cd frontend && $(NPM) install --silent)
 	@cd frontend && $(NPM) run build
 
 start: ## Start model runtime + gateway (serves API and built dashboard on :8080)
