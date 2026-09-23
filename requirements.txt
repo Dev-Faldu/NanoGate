@@ -1,0 +1,24 @@
+--extra-index-url https://download.pytorch.org/whl/cu130
+datasets==5.0.1
+fastapi==0.141.1
+httpx==0.28.1
+joblib==1.6.0
+matplotlib==3.11.2
+numpy==2.4.6
+nvidia-ml-py==13.610.43
+openai==3.19.0
+pandas==3.0.6
+prometheus_client==0.26.0
+psutil==7.2.2
+pydantic==2.13.5
+pytest==9.1.1
+pytest-asyncio==1.4.0
+PyYAML==6.0.3
+scikit-learn==1.9.1
+scipy==1.18.1
+sentence-transformers==6.1.0
+spacy==3.8.16
+torch==2.14.0+cu130
+uvicorn==0.53.0
+presidio_analyzer==2.2.364
+presidio_anonymizer==2.2.364

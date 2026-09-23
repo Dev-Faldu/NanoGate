@@ -1,0 +1,7 @@
+{
+  "retrieval": 0.6,
+  "verifier": 0.3,
+  "source": "validation-selected (run 20260923T023708Z-cache-0dcb26)",
+  "run_id": "20260923T023708Z-cache-0dcb26",
+  "selection_rule": "maximize correct hits subject to zero false hits on validation"
+}

@@ -1,0 +1,50 @@
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/jetbrains-mono";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { color-scheme: light; }
+  body {
+    @apply bg-ivory text-ink font-sans antialiased;
+    font-feature-settings: "cv11", "ss01";
+    background-image:
+      radial-gradient(1200px 600px at 85% -10%, rgba(230, 233, 251, 0.55), transparent 60%),
+      radial-gradient(900px 500px at -10% 10%, rgba(225, 245, 236, 0.45), transparent 60%);
+    background-attachment: fixed;
+  }
+  :focus-visible { @apply outline-none ring-2 ring-peri ring-offset-2 ring-offset-ivory; }
+  ::selection { background: #e6e9fb; }
+}
+
+@layer components {
+  .panel {
+    @apply rounded-card border border-line/80 bg-white/75 shadow-soft backdrop-blur-md;
+  }
+  .panel-hover { @apply transition-all duration-180 hover:shadow-lift hover:border-line; }
+  .eyebrow { @apply text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-3; }
+  .num { font-variant-numeric: tabular-nums; }
+  .mono { @apply font-mono text-[12px]; }
+  .btn {
+    @apply inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-colors duration-180
+           disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary { @apply btn bg-ink text-white hover:bg-ink/90; }
+  .btn-ghost { @apply btn border border-line bg-white/70 text-ink hover:bg-white; }
+  .input {
+    @apply w-full rounded-xl border border-line bg-white/80 px-3 py-2 text-sm text-ink placeholder:text-ink-3
+           transition-colors duration-180 focus:border-peri focus:outline-none focus:ring-2 focus:ring-peri/20;
+  }
+  .table-head { @apply px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-3; }
+  .table-cell { @apply px-4 py-3 text-sm text-ink; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

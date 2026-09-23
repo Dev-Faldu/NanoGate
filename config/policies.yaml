@@ -1,0 +1,86 @@
+# NanoGate policy set. Loaded into typed models (backend/nanogate/policy.py).
+# Published versions are stored in the database; this file seeds version 1 of each policy.
+# Data classes (ascending sensitivity): Public < Internal < Confidential < Restricted < Secret
+policy_set: nanogate-default
+
+tenants:
+  acme:
+    display_name: Acme Corp
+    departments:
+      hr:       { display_name: Human Resources, policy: hr }
+      it:       { display_name: IT Service Desk, policy: it }
+      sales:    { display_name: Sales,           policy: sales }
+      security: { display_name: Security Operations, policy: security }
+  globex:
+    display_name: Globex Industries
+    departments:
+      it:       { display_name: IT Service Desk, policy: it }
+
+policies:
+  hr:
+    description: HR handles employee personal data. Everything stays on the device.
+    routes: [cache, local, local_large]          # remote never permitted
+    remote: { enabled: false, max_data_class: Public }
+    dlp:
+      pii_action: local_only                     # keep PII, execute only on-device
+      secret_action: deny
+      fail_mode: closed                          # DLP unavailable -> deny
+      output_scan: true
+      output_pii_action: allow_if_in_input       # model may echo PII the user supplied, never new PII
+    cache: { enabled: true, max_data_class: Internal, ttl_s: 86400 }
+    retention: { store_raw_prompts: false, receipt_days: 2555 }
+    budget: { monthly_usd: 25.0, monthly_tokens: 3000000, max_tokens_per_request: 1024 }
+    rate_limit: { rpm: 60 }
+    router: { abstain_action: local_flagged }
+    knowledge_sources: []
+
+  it:
+    description: IT service desk. Public/internal questions may escalate; sensitive data stays local.
+    routes: [cache, local, local_large, remote]
+    remote: { enabled: true, max_data_class: Internal }
+    dlp:
+      pii_action: local_only
+      secret_action: deny
+      fail_mode: closed
+      output_scan: true
+      output_pii_action: redact
+    cache: { enabled: true, max_data_class: Internal, ttl_s: 86400 }
+    retention: { store_raw_prompts: false, receipt_days: 365 }
+    budget: { monthly_usd: 50.0, monthly_tokens: 5000000, max_tokens_per_request: 1024 }
+    rate_limit: { rpm: 120 }
+    router: { abstain_action: local_flagged }
+    knowledge_sources: []
+
+  sales:
+    description: Sales may use remote tiers after customer identifiers are tokenized.
+    routes: [cache, local, local_large, remote]
+    remote: { enabled: true, max_data_class: Internal }
+    dlp:
+      pii_action: tokenize                       # emails/phones -> reversible placeholders, then Internal
+      secret_action: deny
+      fail_mode: closed
+      output_scan: true
+      output_pii_action: redact
+    cache: { enabled: true, max_data_class: Internal, ttl_s: 43200 }
+    retention: { store_raw_prompts: false, receipt_days: 365 }
+    budget: { monthly_usd: 100.0, monthly_tokens: 8000000, max_tokens_per_request: 2048 }
+    rate_limit: { rpm: 120 }
+    router: { abstain_action: local_flagged }
+    knowledge_sources: []
+
+  security:
+    description: Security operations. Grounded on the CISA KEV catalog; secrets are always blocked.
+    routes: [cache, local, local_large]
+    remote: { enabled: false, max_data_class: Public }
+    dlp:
+      pii_action: local_only
+      secret_action: deny
+      fail_mode: closed
+      output_scan: true
+      output_pii_action: redact
+    cache: { enabled: true, max_data_class: Internal, ttl_s: 21600 }
+    retention: { store_raw_prompts: false, receipt_days: 2555 }
+    budget: { monthly_usd: 50.0, monthly_tokens: 5000000, max_tokens_per_request: 1024 }
+    rate_limit: { rpm: 120 }
+    router: { abstain_action: local_flagged }
+    knowledge_sources: [cisa_kev]

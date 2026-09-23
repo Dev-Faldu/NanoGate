@@ -1,0 +1,1051 @@
+{
+  "run_id": "20260923T023338Z-cache-688607",
+  "n_groups": {
+    "validation": 12,
+    "test": 18
+  },
+  "n_queries": 80,
+  "n_validation_queries": 52,
+  "validation": {
+    "cosine": null,
+    "verified": {
+      "queries": 52,
+      "hits": 1,
+      "hit_rate": 0.019230769230769232,
+      "correct_hits": 1,
+      "precision": 1.0,
+      "recall_of_equivalent": 0.041666666666666664,
+      "false_hits": 0,
+      "false_hit_rate": 0.0,
+      "hard_negatives": 24,
+      "hard_negative_rejection": 1.0
+    },
+    "selection_rule": "maximize correct hits subject to zero false hits on validation"
+  },
+  "methods": {
+    "no_cache": {
+      "hit_rate": 0.0,
+      "precision": null,
+      "false_hit_rate": 0.0,
+      "hard_negative_rejection": 1.0,
+      "p50_ms": null,
+      "p95_ms": null
+    },
+    "exact": {
+      "hit_rate": 0.0,
+      "precision": null,
+      "false_hit_rate": 0.0,
+      "hard_negative_rejection": 1.0,
+      "p50_ms": null,
+      "p95_ms": null
+    },
+    "cosine_semantic": {
+      "queries": 80,
+      "hits": 8,
+      "hit_rate": 0.1,
+      "correct_hits": 4,
+      "precision": 0.5,
+      "recall_of_equivalent": 0.10810810810810811,
+      "false_hits": 4,
+      "false_hit_rate": 0.09302325581395349,
+      "hard_negatives": 39,
+      "hard_negative_rejection": 0.8974358974358975,
+      "threshold": 0.95,
+      "p50_ms": null,
+      "p95_ms": null
+    },
+    "verified_semantic": {
+      "queries": 80,
+      "hits": 3,
+      "hit_rate": 0.0375,
+      "precision": 1.0,
+      "false_hit_rate": 0.0,
+      "correct_hits": 3,
+      "false_hits": 0,
+      "hard_negatives": 39,
+      "hard_negative_rejection": 1.0,
+      "p50_ms": 22.59990749996632,
+      "p95_ms": 172.5993484498417,
+      "decisions": {
+        "CACHE_MISS": 72,
+        "CACHE_VERIFIED": 3,
+        "CACHE_HARD_NEGATIVE": 5
+      },
+      "thresholds": {
+        "retrieval": 0.9500000000000003,
+        "verifier": 0.5
+      }
+    }
+  },
+  "pairs": [
+    {
+      "a": "What steps restore my VPN connection?",
+      "b": "How do I reset the VPN client?",
+      "similarity": 0.9013,
+      "verifier": 0.9336,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "How can I reset the VPN software on my laptop?",
+      "b": "How do I reset the VPN client?",
+      "similarity": 0.9343,
+      "verifier": 0.9946,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "My VPN client is stuck, how do I reset it?",
+      "b": "How do I reset the VPN client?",
+      "similarity": 0.9545,
+      "verifier": 0.9971,
+      "region": "accepted",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": true
+    },
+    {
+      "a": "How do I reset another employee's VPN password?",
+      "b": "How do I reset the VPN client?",
+      "similarity": 0.8668,
+      "verifier": 0.0008,
+      "region": "rejected",
+      "kind": "hard_negative:ownership",
+      "conflicts": [
+        "ownership: one request targets another person's resource",
+        "authorization: credential operation on a different principal",
+        "object: credential vs non-credential target"
+      ],
+      "correct": true
+    },
+    {
+      "a": "How do I reset the VPN client for all users in the company?",
+      "b": "How do I reset the VPN client?",
+      "similarity": 0.9371,
+      "verifier": 0.9945,
+      "region": "rejected",
+      "kind": "hard_negative:scope",
+      "conflicts": [
+        "scope/authorization: one request is organization-wide"
+      ],
+      "correct": true
+    },
+    {
+      "a": "How do I uninstall the VPN client?",
+      "b": "How do I reset the VPN client?",
+      "similarity": 0.914,
+      "verifier": 0.0028,
+      "region": "rejected",
+      "kind": "hard_negative:action",
+      "conflicts": [
+        "intent: action ['remove'] vs ['restore']"
+      ],
+      "correct": true
+    },
+    {
+      "a": "What is the process to update my Windows login password?",
+      "b": "How do I change my Windows password?",
+      "similarity": 0.9085,
+      "verifier": 0.9976,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "How can I set a new password for my Windows account?",
+      "b": "How do I change my Windows password?",
+      "similarity": 0.9567,
+      "verifier": 0.9979,
+      "region": "accepted",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": true
+    },
+    {
+      "a": "How do I change my manager's Windows password?",
+      "b": "How do I change my Windows password?",
+      "similarity": 0.9414,
+      "verifier": 0.7858,
+      "region": "rejected",
+      "kind": "hard_negative:ownership",
+      "conflicts": [
+        "ownership: one request targets another person's resource",
+        "authorization: credential operation on a different principal"
+      ],
+      "correct": true
+    },
+    {
+      "a": "How do I change the Windows password for every account in the domain?",
+      "b": "How do I change my Windows password?",
+      "similarity": 0.8887,
+      "verifier": 0.9854,
+      "region": "rejected",
+      "kind": "hard_negative:scope",
+      "conflicts": [
+        "scope/authorization: one request is organization-wide",
+        "authorization: credential operation on a different principal"
+      ],
+      "correct": true
+    },
+    {
+      "a": "How do I stop Windows from asking me to change my password?",
+      "b": "How do I change my Windows password?",
+      "similarity": 0.8983,
+      "verifier": 0.0001,
+      "region": "rejected",
+      "kind": "hard_negative:polarity",
+      "conflicts": [
+        "polarity: negation differs"
+      ],
+      "correct": true
+    },
+    {
+      "a": "How can I connect my Mac to the office printer?",
+      "b": "How do I add the office printer on my Mac?",
+      "similarity": 0.9451,
+      "verifier": 0.9952,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "What are the steps to set up the office printer on a MacBook?",
+      "b": "How do I add the office printer on my Mac?",
+      "similarity": 0.9449,
+      "verifier": 0.997,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "How do I remove the office printer from my Mac?",
+      "b": "How do I add the office printer on my Mac?",
+      "similarity": 0.8608,
+      "verifier": 0.0,
+      "region": "rejected",
+      "kind": "hard_negative:action",
+      "conflicts": [
+        "intent: action ['remove'] vs ['create']"
+      ],
+      "correct": true
+    },
+    {
+      "a": "How do I add the office printer on all Macs in the building?",
+      "b": "How do I add the office printer on my Mac?",
+      "similarity": 0.9594,
+      "verifier": 0.7235,
+      "region": "hard_negative",
+      "kind": "hard_negative:scope",
+      "conflicts": [
+        "scope/authorization: one request is organization-wide"
+      ],
+      "correct": true
+    },
+    {
+      "a": "What steps register my new phone for multi-factor authentication?",
+      "b": "How do I enroll a new phone for MFA?",
+      "similarity": 0.7773,
+      "verifier": 0.9954,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [
+        "object: credential vs non-credential target"
+      ],
+      "correct": false
+    },
+    {
+      "a": "How can I set up MFA on my replacement phone?",
+      "b": "How do I enroll a new phone for MFA?",
+      "similarity": 0.926,
+      "verifier": 0.995,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "How do I enroll a phone for MFA on my colleague's account?",
+      "b": "How do I enroll a new phone for MFA?",
+      "similarity": 0.9261,
+      "verifier": 0.0152,
+      "region": "rejected",
+      "kind": "hard_negative:ownership",
+      "conflicts": [
+        "ownership: one request targets another person's resource",
+        "authorization: credential operation on a different principal"
+      ],
+      "correct": true
+    },
+    {
+      "a": "How do I disable MFA on my account?",
+      "b": "How do I enroll a new phone for MFA?",
+      "similarity": 0.7204,
+      "verifier": 0.0,
+      "region": "rejected",
+      "kind": "hard_negative:polarity",
+      "conflicts": [
+        "polarity: negation differs"
+      ],
+      "correct": true
+    },
+    {
+      "a": "How do visitors connect to our guest Wi-Fi and what is it called?",
+      "b": "What is the guest Wi-Fi network name and how do visitors join it?",
+      "similarity": 0.9283,
+      "verifier": 0.9978,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "Which Wi-Fi should guests use and how do they get on it?",
+      "b": "What is the guest Wi-Fi network name and how do visitors join it?",
+      "similarity": 0.8561,
+      "verifier": 0.9972,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "What is the password for the internal corporate Wi-Fi?",
+      "b": "Which password manager does the company approve?",
+      "similarity": 0.7139,
+      "verifier": 0.0124,
+      "region": "rejected",
+      "kind": "hard_negative:object",
+      "conflicts": [],
+      "correct": true
+    },
+    {
+      "a": "How do I block visitors from joining the guest Wi-Fi?",
+      "b": "What is the guest Wi-Fi network name and how do visitors join it?",
+      "similarity": 0.8046,
+      "verifier": 0.0,
+      "region": "rejected",
+      "kind": "hard_negative:polarity",
+      "conflicts": [],
+      "correct": true
+    },
+    {
+      "a": "How can I verify full-disk encryption is enabled on my laptop?",
+      "b": "How do I check that my laptop disk is encrypted?",
+      "similarity": 0.9124,
+      "verifier": 0.9963,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "What's the way to confirm my laptop's drive encryption is on?",
+      "b": "How do I check that my laptop disk is encrypted?",
+      "similarity": 0.94,
+      "verifier": 0.998,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "How do I turn off disk encryption on my laptop?",
+      "b": "How do I check that my laptop disk is encrypted?",
+      "similarity": 0.8513,
+      "verifier": 0.0,
+      "region": "rejected",
+      "kind": "hard_negative:polarity",
+      "conflicts": [],
+      "correct": true
+    },
+    {
+      "a": "How do I check that every laptop in the company is encrypted?",
+      "b": "How do I check that my laptop disk is encrypted?",
+      "similarity": 0.8963,
+      "verifier": 0.0156,
+      "region": "rejected",
+      "kind": "hard_negative:scope",
+      "conflicts": [
+        "scope/authorization: one request is organization-wide"
+      ],
+      "correct": true
+    },
+    {
+      "a": "How can I change the signature on my Outlook emails?",
+      "b": "How do I update my email signature in Outlook?",
+      "similarity": 0.9569,
+      "verifier": 0.9975,
+      "region": "hard_negative",
+      "kind": "paraphrase",
+      "conflicts": [
+        "output type: [] vs ['email']"
+      ],
+      "correct": false
+    },
+    {
+      "a": "What are the steps to edit my Outlook email signature?",
+      "b": "How do I update my email signature in Outlook?",
+      "similarity": 0.9523,
+      "verifier": 0.998,
+      "region": "accepted",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": true
+    },
+    {
+      "a": "How do I update the CEO's email signature in Outlook?",
+      "b": "How do I update my email signature in Outlook?",
+      "similarity": 0.9206,
+      "verifier": 0.0009,
+      "region": "rejected",
+      "kind": "hard_negative:ownership",
+      "conflicts": [
+        "ownership: one request targets another person's resource"
+      ],
+      "correct": true
+    },
+    {
+      "a": "How do I delete my Outlook mailbox?",
+      "b": "How do I update my email signature in Outlook?",
+      "similarity": 0.6882,
+      "verifier": 0.0,
+      "region": "rejected",
+      "kind": "hard_negative:action",
+      "conflicts": [
+        "intent: action ['remove'] vs ['change']",
+        "output type: [] vs ['email']"
+      ],
+      "correct": true
+    },
+    {
+      "a": "What steps start a recording in a Microsoft Teams meeting?",
+      "b": "How do I record a Teams meeting?",
+      "similarity": 0.8946,
+      "verifier": 0.9888,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "How can I capture a recording of my Teams call?",
+      "b": "How do I record a Teams meeting?",
+      "similarity": 0.9004,
+      "verifier": 0.959,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "How do I stop a Teams meeting from being recorded?",
+      "b": "How do I record a Teams meeting?",
+      "similarity": 0.8734,
+      "verifier": 0.0,
+      "region": "rejected",
+      "kind": "hard_negative:polarity",
+      "conflicts": [
+        "polarity: negation differs"
+      ],
+      "correct": true
+    },
+    {
+      "a": "How do I download someone else's Teams meeting recording?",
+      "b": "How do I record a Teams meeting?",
+      "similarity": 0.9065,
+      "verifier": 0.0,
+      "region": "rejected",
+      "kind": "hard_negative:ownership",
+      "conflicts": [
+        "ownership: one request targets another person's resource"
+      ],
+      "correct": true
+    },
+    {
+      "a": "Where can I see how much paid time off I have left?",
+      "b": "How do I check my remaining PTO balance?",
+      "similarity": 0.7746,
+      "verifier": 0.9964,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "How can I find my remaining vacation days?",
+      "b": "How do I check my remaining PTO balance?",
+      "similarity": 0.7316,
+      "verifier": 0.9963,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "How do I check my direct report's PTO balance?",
+      "b": "How do I check my remaining PTO balance?",
+      "similarity": 0.8962,
+      "verifier": 0.0027,
+      "region": "rejected",
+      "kind": "hard_negative:ownership",
+      "conflicts": [],
+      "correct": true
+    },
+    {
+      "a": "How do I check my PTO balance for 2024?",
+      "b": "How do I check my remaining PTO balance?",
+      "similarity": 0.8877,
+      "verifier": 0.0655,
+      "region": "rejected",
+      "kind": "hard_negative:timeframe",
+      "conflicts": [
+        "timeframe: ['2024'] vs []",
+        "entities: numbers ['2024'] vs []"
+      ],
+      "correct": true
+    },
+    {
+      "a": "What are the dates for benefits open enrollment?",
+      "b": "When is open enrollment for health benefits?",
+      "similarity": 0.9332,
+      "verifier": 0.9814,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "When can I change my health insurance during open enrollment?",
+      "b": "When is open enrollment for health benefits?",
+      "similarity": 0.8731,
+      "verifier": 0.9939,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "When was open enrollment for health benefits last year?",
+      "b": "When is open enrollment for health benefits?",
+      "similarity": 0.9381,
+      "verifier": 0.9605,
+      "region": "rejected",
+      "kind": "hard_negative:timeframe",
+      "conflicts": [
+        "timeframe: ['last year'] vs []"
+      ],
+      "correct": true
+    },
+    {
+      "a": "When is open enrollment for the 401k plan?",
+      "b": "When is open enrollment for health benefits?",
+      "similarity": 0.8558,
+      "verifier": 0.0428,
+      "region": "rejected",
+      "kind": "hard_negative:entity",
+      "conflicts": [],
+      "correct": true
+    },
+    {
+      "a": "What is the deadline for the yearly performance review?",
+      "b": "When are annual performance reviews due?",
+      "similarity": 0.9161,
+      "verifier": 0.9973,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "By when do annual reviews need to be completed?",
+      "b": "When are annual performance reviews due?",
+      "similarity": 0.8792,
+      "verifier": 0.9976,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "When is my manager's performance review due?",
+      "b": "When are annual performance reviews due?",
+      "similarity": 0.857,
+      "verifier": 0.0003,
+      "region": "rejected",
+      "kind": "hard_negative:ownership",
+      "conflicts": [
+        "ownership: one request targets another person's resource"
+      ],
+      "correct": true
+    },
+    {
+      "a": "When are mid-year performance check-ins due?",
+      "b": "When are annual performance reviews due?",
+      "similarity": 0.8203,
+      "verifier": 0.0002,
+      "region": "rejected",
+      "kind": "hard_negative:entity",
+      "conflicts": [],
+      "correct": true
+    },
+    {
+      "a": "Is working from home two days per week allowed?",
+      "b": "Can I work remotely two days a week?",
+      "similarity": 0.8942,
+      "verifier": 0.9704,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "Does policy permit two remote days each week?",
+      "b": "Can I work remotely two days a week?",
+      "similarity": 0.8387,
+      "verifier": 0.9102,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "Can I work remotely five days a week?",
+      "b": "Can I work remotely two days a week?",
+      "similarity": 0.9136,
+      "verifier": 0.0,
+      "region": "rejected",
+      "kind": "hard_negative:entity",
+      "conflicts": [],
+      "correct": true
+    },
+    {
+      "a": "Can my whole team work remotely two days a week?",
+      "b": "Can I work remotely two days a week?",
+      "similarity": 0.9394,
+      "verifier": 0.8933,
+      "region": "rejected",
+      "kind": "hard_negative:scope",
+      "conflicts": [
+        "scope/authorization: one request is organization-wide"
+      ],
+      "correct": true
+    },
+    {
+      "a": "What's the process to add a new lead to Salesforce?",
+      "b": "How do I log a new lead in the CRM?",
+      "similarity": 0.8327,
+      "verifier": 0.9959,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "How can I create a lead record in our CRM?",
+      "b": "How do I log a new lead in the CRM?",
+      "similarity": 0.9018,
+      "verifier": 0.9937,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "How do I delete a lead from the CRM?",
+      "b": "How do I log a new lead in the CRM?",
+      "similarity": 0.8649,
+      "verifier": 0.0,
+      "region": "rejected",
+      "kind": "hard_negative:action",
+      "conflicts": [],
+      "correct": true
+    },
+    {
+      "a": "How do I reassign another rep's leads in the CRM?",
+      "b": "How do I log a new lead in the CRM?",
+      "similarity": 0.8498,
+      "verifier": 0.0,
+      "region": "rejected",
+      "kind": "hard_negative:ownership",
+      "conflicts": [
+        "ownership: one request targets another person's resource"
+      ],
+      "correct": true
+    },
+    {
+      "a": "What's the formula for my commission?",
+      "b": "How is my sales commission calculated?",
+      "similarity": 0.8852,
+      "verifier": 0.9933,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "How does the company compute my sales commission?",
+      "b": "How is my sales commission calculated?",
+      "similarity": 0.9324,
+      "verifier": 0.9977,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "How is my teammate's sales commission calculated?",
+      "b": "How is my sales commission calculated?",
+      "similarity": 0.9114,
+      "verifier": 0.0,
+      "region": "rejected",
+      "kind": "hard_negative:ownership",
+      "conflicts": [],
+      "correct": true
+    },
+    {
+      "a": "How is sales commission calculated for the entire region?",
+      "b": "How is my sales commission calculated?",
+      "similarity": 0.8871,
+      "verifier": 0.0,
+      "region": "rejected",
+      "kind": "hard_negative:scope",
+      "conflicts": [
+        "scope/authorization: one request is organization-wide"
+      ],
+      "correct": true
+    },
+    {
+      "a": "What's the required notice period before a customer renewal?",
+      "b": "How many days before renewal must we notify a customer?",
+      "similarity": 0.9129,
+      "verifier": 0.997,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "How far ahead of renewal do we have to tell the customer?",
+      "b": "How many days before renewal must we notify a customer?",
+      "similarity": 0.9215,
+      "verifier": 0.9963,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "How many days after renewal can a customer cancel?",
+      "b": "How many days before renewal must we notify a customer?",
+      "similarity": 0.8705,
+      "verifier": 0.0,
+      "region": "rejected",
+      "kind": "hard_negative:action",
+      "conflicts": [],
+      "correct": true
+    },
+    {
+      "a": "How many days before renewal must we notify a customer in the EU?",
+      "b": "How many days before renewal must we notify a customer?",
+      "similarity": 0.9195,
+      "verifier": 0.9847,
+      "region": "rejected",
+      "kind": "hard_negative:entity",
+      "conflicts": [],
+      "correct": true
+    },
+    {
+      "a": "What password manager are we allowed to use?",
+      "b": "Which password manager does the company approve?",
+      "similarity": 0.8733,
+      "verifier": 0.9828,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "Which password vault is officially supported?",
+      "b": "Which password manager does the company approve?",
+      "similarity": 0.7513,
+      "verifier": 0.9939,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "How do I view another user's saved passwords in the password manager?",
+      "b": "How do I change my Windows password?",
+      "similarity": 0.7335,
+      "verifier": 0.0,
+      "region": "rejected",
+      "kind": "hard_negative:ownership",
+      "conflicts": [
+        "ownership: one request targets another person's resource",
+        "authorization: credential operation on a different principal",
+        "intent: action ['access'] vs ['change']"
+      ],
+      "correct": true
+    },
+    {
+      "a": "Which password manager was approved in 2020?",
+      "b": "Which password manager does the company approve?",
+      "similarity": 0.881,
+      "verifier": 0.0317,
+      "region": "rejected",
+      "kind": "hard_negative:timeframe",
+      "conflicts": [
+        "timeframe: ['2020'] vs []",
+        "entities: numbers ['2020'] vs []"
+      ],
+      "correct": true
+    },
+    {
+      "a": "Does CISA list CVE-2021-44228 as a known exploited vulnerability?",
+      "b": "Is CVE-2021-44228 in the CISA KEV catalog?",
+      "similarity": 0.8958,
+      "verifier": 0.003,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [
+        "output type: ['list'] vs []"
+      ],
+      "correct": false
+    },
+    {
+      "a": "Is CVE-2021-44228 on the known exploited vulnerabilities list?",
+      "b": "Is CVE-2021-44228 in the CISA KEV catalog?",
+      "similarity": 0.8506,
+      "verifier": 0.0079,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [
+        "output type: ['list'] vs []"
+      ],
+      "correct": false
+    },
+    {
+      "a": "Is CVE-2021-45046 in the CISA KEV catalog?",
+      "b": "Is CVE-2021-44228 in the CISA KEV catalog?",
+      "similarity": 0.9865,
+      "verifier": 0.0,
+      "region": "hard_negative",
+      "kind": "hard_negative:entity",
+      "conflicts": [
+        "entities: numbers ['2021', '45046'] vs ['2021', '44228']",
+        "entities: CVE ['CVE-2021-45046'] vs ['CVE-2021-44228']"
+      ],
+      "correct": true
+    },
+    {
+      "a": "Is CVE-2022-22965 in the CISA KEV catalog?",
+      "b": "Is CVE-2021-44228 in the CISA KEV catalog?",
+      "similarity": 0.9761,
+      "verifier": 0.0,
+      "region": "hard_negative",
+      "kind": "hard_negative:entity",
+      "conflicts": [
+        "timeframe: ['2022'] vs ['2021']",
+        "entities: numbers ['2022', '22965'] vs ['2021', '44228']",
+        "entities: CVE ['CVE-2022-22965'] vs ['CVE-2021-44228']"
+      ],
+      "correct": true
+    },
+    {
+      "a": "What's the process to get local admin rights on my laptop?",
+      "b": "How do I request admin access to my laptop?",
+      "similarity": 0.8968,
+      "verifier": 0.9981,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "How can I ask for administrator privileges on my computer?",
+      "b": "How do I request admin access to my laptop?",
+      "similarity": 0.8845,
+      "verifier": 0.9964,
+      "region": "rejected",
+      "kind": "paraphrase",
+      "conflicts": [],
+      "correct": false
+    },
+    {
+      "a": "How do I request admin access to my colleague's laptop?",
+      "b": "How do I request admin access to my laptop?",
+      "similarity": 0.9565,
+      "verifier": 0.0,
+      "region": "hard_negative",
+      "kind": "hard_negative:ownership",
+      "conflicts": [
+        "ownership: one request targets another person's resource"
+      ],
+      "correct": true
+    },
+    {
+      "a": "How do I request domain admin access for the whole company?",
+      "b": "How do I request admin access to my laptop?",
+      "similarity": 0.8071,
+      "verifier": 0.0,
+      "region": "rejected",
+      "kind": "hard_negative:scope",
+      "conflicts": [],
+      "correct": true
+    },
+    {
+      "a": "How do I remove admin access from my laptop?",
+      "b": "How do I request admin access to my laptop?",
+      "similarity": 0.8909,
+      "verifier": 0.0,
+      "region": "rejected",
+      "kind": "hard_negative:action",
+      "conflicts": [],
+      "correct": true
+    },
+    {
+      "a": "How do I bake sourdough bread?",
+      "b": "How do I add the office printer on my Mac?",
+      "similarity": 0.5144,
+      "verifier": 0.0,
+      "region": "rejected",
+      "kind": "unrelated",
+      "conflicts": [],
+      "correct": true
+    },
+    {
+      "a": "What time zone is Singapore in?",
+      "b": "How many days before renewal must we notify a customer?",
+      "similarity": 0.5399,
+      "verifier": 0.0,
+      "region": "rejected",
+      "kind": "unrelated",
+      "conflicts": [],
+      "correct": true
+    },
+    {
+      "a": "How many ounces are in a pound?",
+      "b": "How is my sales commission calculated?",
+      "similarity": 0.484,
+      "verifier": 0.0,
+      "region": "rejected",
+      "kind": "unrelated",
+      "conflicts": [],
+      "correct": true
+    },
+    {
+      "a": "What does GDPR stand for?",
+      "b": "Which password manager does the company approve?",
+      "similarity": 0.5353,
+      "verifier": 0.0,
+      "region": "rejected",
+      "kind": "unrelated",
+      "conflicts": [
+        "object: credential vs non-credential target"
+      ],
+      "correct": true
+    }
+  ],
+  "hard_negative_rejection_by_type": {
+    "ownership": {
+      "n": 11,
+      "rejected": 11
+    },
+    "scope": {
+      "n": 7,
+      "rejected": 7
+    },
+    "action": {
+      "n": 6,
+      "rejected": 6
+    },
+    "polarity": {
+      "n": 5,
+      "rejected": 5
+    },
+    "object": {
+      "n": 1,
+      "rejected": 1
+    },
+    "timeframe": {
+      "n": 3,
+      "rejected": 3
+    },
+    "entity": {
+      "n": 6,
+      "rejected": 6
+    }
+  },
+  "isolation": {
+    "cross_tenant_leaks": 0,
+    "probes": 90,
+    "detail": {
+      "cross_tenant": {
+        "probes": 18,
+        "leaks": 0
+      },
+      "cross_department": {
+        "probes": 18,
+        "leaks": 0
+      },
+      "stale_policy": {
+        "probes": 18,
+        "leaks": 0
+      },
+      "context_mismatch": {
+        "probes": 18,
+        "leaks": 0
+      },
+      "system_prompt_mismatch": {
+        "probes": 18,
+        "leaks": 0
+      }
+    },
+    "source_hit_before_change": true,
+    "stale_source_rejected": true,
+    "revoked_source_rejected": true,
+    "ttl_expired_rejected": true
+  },
+  "paws": {
+    "n": 1000,
+    "positives": 450,
+    "negatives": 550,
+    "thresholds": {
+      "retrieval": 0.9500000000000003,
+      "verifier": 0.5
+    },
+    "cosine_only": {
+      "false_accept_rate": 0.8618181818181818,
+      "true_accept_rate": 0.9133333333333333,
+      "precision": 0.46440677966101696
+    },
+    "verified_nli_only": {
+      "false_accept_rate": 0.36363636363636365,
+      "true_accept_rate": 0.8933333333333333,
+      "precision": 0.6677740863787376
+    },
+    "verified_nli_plus_slots": {
+      "false_accept_rate": 0.35454545454545455,
+      "true_accept_rate": 0.8733333333333333,
+      "precision": 0.6683673469387755
+    },
+    "note": "PAWS pairs are adversarial word-order/word-swap paraphrases of Wikipedia sentences (not enterprise questions)."
+  },
+  "latency_ms": {
+    "p50": 22.59990749996632,
+    "p95": 172.5993484498417,
+    "n": 80
+  },
+  "embedding_model": "BAAI/bge-small-en-v1.5@5c38ec7c405e",
+  "verifier_model": "cross-encoder/nli-deberta-v3-base@6c749ce3425c",
+  "device": "cpu",
+  "data_label": "Authored evaluation set (enterprise cache groups) + Public dataset (PAWS)"
+}

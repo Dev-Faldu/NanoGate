@@ -1,0 +1,21 @@
+# runtimes, models, venvs
+.runtime/
+.venv/
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/test-results/
+frontend/playwright-report/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# local state: database, keys, logs (NEVER commit)
+var/
+.env
+*.key
+dev_keys.json
+
+# large raw public data snapshots are re-downloadable (registry.json keeps hashes)
+datasets/raw/
+frontend/e2e/screenshots/

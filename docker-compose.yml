@@ -1,0 +1,21 @@
+# Optional container deployment for hosts where containers are permitted (arm64 images).
+# NOT executed on the event ZGX Nano (no Docker socket access); the model runtime stays native:
+# start it with `scripts/runtime.sh start` (Ollama on the GB10) and point the gateway at it.
+services:
+  gateway:
+    build: { context: ., dockerfile: Dockerfile }
+    platform: linux/arm64
+    network_mode: host            # reach the native Ollama on 127.0.0.1:11434
+    environment:
+      LOCAL_MODEL_BASE_URL: http://127.0.0.1:11434/v1
+      NANOGATE_HOST: 127.0.0.1
+      NANOGATE_PORT: "8080"
+      ML_DEVICE: cpu               # set to cuda with the NVIDIA container toolkit
+      HF_HOME: /app/.runtime/hf
+    volumes:
+      - ./var:/app/var             # DB, keys (0600), HMAC key
+      - ./.runtime/hf:/app/.runtime/hf
+      - ./datasets:/app/datasets
+      - ./artifacts:/app/artifacts
+      - ./config:/app/config:ro
+    restart: unless-stopped

@@ -1,0 +1,240 @@
+{
+  "run_id": "20260923T024225Z-dlp-6fda62",
+  "n_rows": 620,
+  "n_positive": 300,
+  "n_spans": 340,
+  "data_label": "Synthetic security evaluation data + Public dataset negatives (MMLU)",
+  "caveat": "Detector rules and synthetic templates were written by the same team; this is a regression benchmark.",
+  "detectors": {
+    "regex_baseline": {
+      "span_recall": 0.47058823529411764,
+      "finding_precision": 0.8839779005524862,
+      "f1": 0.6142034548944337,
+      "per_category": {
+        "CARD": {
+          "n": 20,
+          "detected": 20,
+          "recall": 1.0
+        },
+        "EMAIL": {
+          "n": 60,
+          "detected": 40,
+          "recall": 0.6666666666666666
+        },
+        "EMPLOYEE_ID": {
+          "n": 20,
+          "detected": 20,
+          "recall": 1.0
+        },
+        "IP": {
+          "n": 20,
+          "detected": 20,
+          "recall": 1.0
+        },
+        "PHONE": {
+          "n": 40,
+          "detected": 40,
+          "recall": 1.0
+        },
+        "SECRET": {
+          "n": 140,
+          "detected": 0,
+          "recall": 0.0
+        },
+        "SSN": {
+          "n": 40,
+          "detected": 20,
+          "recall": 0.5
+        }
+      },
+      "doc_sensitive_recall": 0.4666666666666667,
+      "doc_false_positive_rate": 0.003125,
+      "secret_recall": 0.0,
+      "secret_false_positive_rate": 0.0,
+      "confusion": {
+        "sens_tp": 140,
+        "sens_fn": 160,
+        "sens_fp": 1,
+        "sens_tn": 319,
+        "sec_tp": 0,
+        "sec_fn": 140,
+        "sec_fp": 0,
+        "sec_tn": 480
+      },
+      "latency_ms": {
+        "p50": 0.012447499784684624,
+        "p95": 0.1396011999759139
+      },
+      "false_positive_examples": [
+        {
+          "id": "syn-pos-9",
+          "category": "EMAIL",
+          "kind": "positive"
+        },
+        {
+          "id": "syn-pos-24",
+          "category": "EMAIL",
+          "kind": "positive"
+        },
+        {
+          "id": "syn-pos-39",
+          "category": "EMAIL",
+          "kind": "positive"
+        },
+        {
+          "id": "syn-pos-54",
+          "category": "EMAIL",
+          "kind": "positive"
+        },
+        {
+          "id": "syn-pos-69",
+          "category": "EMAIL",
+          "kind": "positive"
+        },
+        {
+          "id": "syn-pos-84",
+          "category": "EMAIL",
+          "kind": "positive"
+        },
+        {
+          "id": "syn-pos-99",
+          "category": "EMAIL",
+          "kind": "positive"
+        },
+        {
+          "id": "syn-pos-114",
+          "category": "EMAIL",
+          "kind": "positive"
+        }
+      ]
+    },
+    "presidio_baseline": {
+      "span_recall": 0.22058823529411764,
+      "finding_precision": 1.0,
+      "f1": 0.36144578313253006,
+      "per_category": {
+        "CARD": {
+          "n": 20,
+          "detected": 20,
+          "recall": 1.0
+        },
+        "EMAIL": {
+          "n": 60,
+          "detected": 15,
+          "recall": 0.25
+        },
+        "EMPLOYEE_ID": {
+          "n": 20,
+          "detected": 0,
+          "recall": 0.0
+        },
+        "IP": {
+          "n": 20,
+          "detected": 20,
+          "recall": 1.0
+        },
+        "PHONE": {
+          "n": 40,
+          "detected": 0,
+          "recall": 0.0
+        },
+        "SECRET": {
+          "n": 140,
+          "detected": 0,
+          "recall": 0.0
+        },
+        "SSN": {
+          "n": 40,
+          "detected": 20,
+          "recall": 0.5
+        }
+      },
+      "doc_sensitive_recall": 0.25,
+      "doc_false_positive_rate": 0.0,
+      "secret_recall": 0.0,
+      "secret_false_positive_rate": 0.0,
+      "confusion": {
+        "sens_tp": 75,
+        "sens_fn": 225,
+        "sens_fp": 0,
+        "sens_tn": 320,
+        "sec_tp": 0,
+        "sec_fn": 140,
+        "sec_fp": 0,
+        "sec_tn": 480
+      },
+      "latency_ms": {
+        "p50": 1.933937499870808,
+        "p95": 12.530001750155858
+      },
+      "false_positive_examples": []
+    },
+    "layered_nanogate": {
+      "span_recall": 1.0,
+      "finding_precision": 0.9970674486803519,
+      "f1": 0.9985315712187959,
+      "per_category": {
+        "CARD": {
+          "n": 20,
+          "detected": 20,
+          "recall": 1.0
+        },
+        "EMAIL": {
+          "n": 60,
+          "detected": 60,
+          "recall": 1.0
+        },
+        "EMPLOYEE_ID": {
+          "n": 20,
+          "detected": 20,
+          "recall": 1.0
+        },
+        "IP": {
+          "n": 20,
+          "detected": 20,
+          "recall": 1.0
+        },
+        "PHONE": {
+          "n": 40,
+          "detected": 40,
+          "recall": 1.0
+        },
+        "SECRET": {
+          "n": 140,
+          "detected": 140,
+          "recall": 1.0
+        },
+        "SSN": {
+          "n": 40,
+          "detected": 40,
+          "recall": 1.0
+        }
+      },
+      "doc_sensitive_recall": 1.0,
+      "doc_false_positive_rate": 0.003125,
+      "secret_recall": 1.0,
+      "secret_false_positive_rate": 0.0,
+      "confusion": {
+        "sens_tp": 300,
+        "sens_fn": 0,
+        "sens_fp": 1,
+        "sens_tn": 319,
+        "sec_tp": 140,
+        "sec_fn": 0,
+        "sec_fp": 0,
+        "sec_tn": 480
+      },
+      "latency_ms": {
+        "p50": 1.9788164997862623,
+        "p95": 12.642610100215268
+      },
+      "false_positive_examples": [
+        {
+          "id": "syn-neg-78",
+          "category": "CARD",
+          "kind": "hard_negative"
+        }
+      ]
+    }
+  }
+}

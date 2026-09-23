@@ -1,0 +1,48 @@
+{
+  "run_id": "20260923T024225Z-dlp-6fda62",
+  "kind": "dlp",
+  "timestamp": "2026-09-23T02:42:25+00:00",
+  "git_commit": null,
+  "cli_args": {},
+  "argv": [
+    "evaluate_dlp.py"
+  ],
+  "hardware": {
+    "machine": "aarch64",
+    "python": "3.12.3",
+    "product": "HP ZGX Nano G1n AI Station",
+    "gpu": "NVIDIA GB10",
+    "driver": "580.178.04",
+    "mem_total_bytes": 130594004992
+  },
+  "datasets": {
+    "cisa_kev": {
+      "sha256": "b912a7f9a4c4630455d09b04946664a5dccd8b1a7c987010d89793e1a5b78c91",
+      "rows": 1721,
+      "retrieved_at": "2026-09-23T01:08:03+00:00",
+      "version": "2026.09.22"
+    },
+    "gsm8k": {
+      "sha256": "8664ce20a0088b460a1afb39a6fe8fb383a46cdf3bf628a18a0351043bc801ef",
+      "rows": 1319,
+      "retrieved_at": "2026-09-23T01:07:59+00:00",
+      "version": "HF openai/gsm8k main/test"
+    },
+    "mmlu": {
+      "sha256": "3ca0c981b49b6e91acfeb0d3d7e4b9a385e3a29d302760e23df04a5d47975592",
+      "rows": 2912,
+      "retrieved_at": "2026-09-23T01:07:56+00:00",
+      "version": "HF cais/mmlu (test split)"
+    },
+    "paws": {
+      "sha256": "024901ec090436669fa0dc8abb61f6c4a7076a21f189d0e6db1bca8fa474375c",
+      "rows": 8000,
+      "retrieved_at": "2026-09-23T01:08:03+00:00",
+      "version": "labeled_final/test"
+    }
+  },
+  "policy_sha256": "d1665725c49d0d24e78609f9ccf051367e80ed333d0dc71fb05959e84fe426ef",
+  "pricing_sha256": "55890ee1de0ad1b6e3a767fbe34a19afc96c6593e3113dec880374584c6a33ad",
+  "router_meta": null,
+  "dlp_eval_rows": 620
+}

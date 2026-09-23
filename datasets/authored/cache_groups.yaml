@@ -1,0 +1,259 @@
+# AUTHORED EVALUATION SET — enterprise cache equivalence (not real company data).
+# Written by the NanoGate team. Each group: one canonical request (cached), paraphrases that should
+# REUSE its answer, and hard negatives that look similar but must NOT reuse it (typed by failure mode).
+# Disclosure: the same team wrote the verifier's slot rules; PAWS (public) is reported separately
+# as an independent adversarial check. Split is by group id (no group spans train/validation/test).
+groups:
+  - id: it-vpn-reset
+    canonical: How do I reset the VPN client?
+    paraphrases:
+      - "What steps restore my VPN connection?"
+      - "How can I reset the VPN software on my laptop?"
+      - "My VPN client is stuck, how do I reset it?"
+    hard_negatives:
+      - {text: "How do I reset another employee's VPN password?", type: ownership}
+      - {text: "How do I reset the VPN client for all users in the company?", type: scope}
+      - {text: "How do I uninstall the VPN client?", type: action}
+  - id: it-password-change
+    canonical: How do I change my Windows password?
+    paraphrases:
+      - "What is the process to update my Windows login password?"
+      - "How can I set a new password for my Windows account?"
+    hard_negatives:
+      - {text: "How do I change my manager's Windows password?", type: ownership}
+      - {text: "How do I change the Windows password for every account in the domain?", type: scope}
+      - {text: "How do I stop Windows from asking me to change my password?", type: polarity}
+  - id: it-printer-add
+    canonical: How do I add the office printer on my Mac?
+    paraphrases:
+      - "How can I connect my Mac to the office printer?"
+      - "What are the steps to set up the office printer on a MacBook?"
+    hard_negatives:
+      - {text: "How do I remove the office printer from my Mac?", type: action}
+      - {text: "How do I add the office printer on all Macs in the building?", type: scope}
+  - id: it-mfa-enroll
+    canonical: How do I enroll a new phone for MFA?
+    paraphrases:
+      - "What steps register my new phone for multi-factor authentication?"
+      - "How can I set up MFA on my replacement phone?"
+    hard_negatives:
+      - {text: "How do I enroll a phone for MFA on my colleague's account?", type: ownership}
+      - {text: "How do I disable MFA on my account?", type: polarity}
+  - id: it-wifi-guest
+    canonical: What is the guest Wi-Fi network name and how do visitors join it?
+    paraphrases:
+      - "How do visitors connect to our guest Wi-Fi and what is it called?"
+      - "Which Wi-Fi should guests use and how do they get on it?"
+    hard_negatives:
+      - {text: "What is the password for the internal corporate Wi-Fi?", type: object}
+      - {text: "How do I block visitors from joining the guest Wi-Fi?", type: polarity}
+  - id: it-laptop-encrypt
+    canonical: How do I check that my laptop disk is encrypted?
+    paraphrases:
+      - "How can I verify full-disk encryption is enabled on my laptop?"
+      - "What's the way to confirm my laptop's drive encryption is on?"
+    hard_negatives:
+      - {text: "How do I turn off disk encryption on my laptop?", type: polarity}
+      - {text: "How do I check that every laptop in the company is encrypted?", type: scope}
+  - id: it-email-signature
+    canonical: How do I update my email signature in Outlook?
+    paraphrases:
+      - "How can I change the signature on my Outlook emails?"
+      - "What are the steps to edit my Outlook email signature?"
+    hard_negatives:
+      - {text: "How do I update the CEO's email signature in Outlook?", type: ownership}
+      - {text: "How do I delete my Outlook mailbox?", type: action}
+  - id: it-software-request
+    canonical: How do I request a license for Adobe Acrobat?
+    paraphrases:
+      - "What's the process to get an Adobe Acrobat license?"
+      - "How can I ask IT for an Acrobat license?"
+    hard_negatives:
+      - {text: "How do I cancel my Adobe Acrobat license?", type: action}
+      - {text: "How do I request Adobe Acrobat licenses for the whole marketing team?", type: scope}
+  - id: it-shared-drive
+    canonical: How do I access my team's shared drive from home?
+    paraphrases:
+      - "How can I reach our team shared drive when working remotely?"
+      - "What do I need to open the team shared drive from home?"
+    hard_negatives:
+      - {text: "How do I access the finance team's shared drive from home?", type: ownership}
+      - {text: "How do I delete files from my team's shared drive?", type: action}
+  - id: it-backup-restore
+    canonical: How do I restore a deleted file from last week's backup?
+    paraphrases:
+      - "Can I recover a file I deleted last week from backup, and how?"
+      - "What's the procedure to get back a file removed last week using the backups?"
+    hard_negatives:
+      - {text: "How do I restore a deleted file from last year's backup?", type: timeframe}
+      - {text: "How do I permanently delete a file so it cannot be restored?", type: polarity}
+  - id: it-teams-meeting
+    canonical: How do I record a Teams meeting?
+    paraphrases:
+      - "What steps start a recording in a Microsoft Teams meeting?"
+      - "How can I capture a recording of my Teams call?"
+    hard_negatives:
+      - {text: "How do I stop a Teams meeting from being recorded?", type: polarity}
+      - {text: "How do I download someone else's Teams meeting recording?", type: ownership}
+  - id: it-phishing-report
+    canonical: How do I report a phishing email?
+    paraphrases:
+      - "What should I do to report a suspicious phishing message?"
+      - "How can I flag a phishing email to security?"
+    hard_negatives:
+      - {text: "How do I send a phishing test email to all employees?", type: scope}
+      - {text: "How do I recover a phishing email I deleted yesterday?", type: action}
+  - id: hr-pto-balance
+    canonical: How do I check my remaining PTO balance?
+    paraphrases:
+      - "Where can I see how much paid time off I have left?"
+      - "How can I find my remaining vacation days?"
+    hard_negatives:
+      - {text: "How do I check my direct report's PTO balance?", type: ownership}
+      - {text: "How do I check my PTO balance for 2024?", type: timeframe}
+  - id: hr-parental-leave
+    canonical: What is the parental leave policy?
+    paraphrases:
+      - "How much parental leave does the company offer?"
+      - "Can you explain our parental leave benefits?"
+    hard_negatives:
+      - {text: "What was the parental leave policy in 2019?", type: timeframe}
+      - {text: "What is the bereavement leave policy?", type: entity}
+  - id: hr-payslip
+    canonical: Where can I download my payslip?
+    paraphrases:
+      - "How do I get a copy of my pay stub?"
+      - "Where do I find my latest payslip online?"
+    hard_negatives:
+      - {text: "Where can I download my coworker's payslip?", type: ownership}
+      - {text: "Where can I download payslips for all employees?", type: scope}
+  - id: hr-address-update
+    canonical: How do I update my home address in the HR system?
+    paraphrases:
+      - "What steps change my home address in Workday?"
+      - "How can I record my new home address with HR?"
+    hard_negatives:
+      - {text: "How do I update an employee's home address in the HR system?", type: ownership}
+      - {text: "How do I hide my home address from the HR system?", type: polarity}
+  - id: hr-benefits-enroll
+    canonical: When is open enrollment for health benefits?
+    paraphrases:
+      - "What are the dates for benefits open enrollment?"
+      - "When can I change my health insurance during open enrollment?"
+    hard_negatives:
+      - {text: "When was open enrollment for health benefits last year?", type: timeframe}
+      - {text: "When is open enrollment for the 401k plan?", type: entity}
+  - id: hr-expense-policy
+    canonical: What is the daily meal allowance when travelling?
+    paraphrases:
+      - "How much can I expense for meals per day on a business trip?"
+      - "What's the per diem for food on work travel?"
+    hard_negatives:
+      - {text: "What is the daily hotel allowance when travelling?", type: entity}
+      - {text: "What is the daily meal allowance when travelling internationally in 2022?", type: timeframe}
+  - id: hr-performance-review
+    canonical: When are annual performance reviews due?
+    paraphrases:
+      - "What is the deadline for the yearly performance review?"
+      - "By when do annual reviews need to be completed?"
+    hard_negatives:
+      - {text: "When is my manager's performance review due?", type: ownership}
+      - {text: "When are mid-year performance check-ins due?", type: entity}
+  - id: hr-remote-work
+    canonical: Can I work remotely two days a week?
+    paraphrases:
+      - "Is working from home two days per week allowed?"
+      - "Does policy permit two remote days each week?"
+    hard_negatives:
+      - {text: "Can I work remotely five days a week?", type: entity}
+      - {text: "Can my whole team work remotely two days a week?", type: scope}
+  - id: sales-discount-approval
+    canonical: Who approves a discount above 20 percent?
+    paraphrases:
+      - "Which manager signs off on discounts larger than 20%?"
+      - "What approval do I need for a discount over 20 percent?"
+    hard_negatives:
+      - {text: "Who approves a discount above 40 percent?", type: entity}
+      - {text: "Who can reject a discount above 20 percent?", type: action}
+  - id: sales-crm-lead
+    canonical: How do I log a new lead in the CRM?
+    paraphrases:
+      - "What's the process to add a new lead to Salesforce?"
+      - "How can I create a lead record in our CRM?"
+    hard_negatives:
+      - {text: "How do I delete a lead from the CRM?", type: action}
+      - {text: "How do I reassign another rep's leads in the CRM?", type: ownership}
+  - id: sales-quote-template
+    canonical: Where is the standard quote template?
+    paraphrases:
+      - "Where can I find our standard sales quote template?"
+      - "Which folder has the default quote template?"
+    hard_negatives:
+      - {text: "Where is the standard contract termination template?", type: entity}
+      - {text: "Where is the quote template from 2021?", type: timeframe}
+  - id: sales-commission
+    canonical: How is my sales commission calculated?
+    paraphrases:
+      - "What's the formula for my commission?"
+      - "How does the company compute my sales commission?"
+    hard_negatives:
+      - {text: "How is my teammate's sales commission calculated?", type: ownership}
+      - {text: "How is sales commission calculated for the entire region?", type: scope}
+  - id: sales-renewal-notice
+    canonical: How many days before renewal must we notify a customer?
+    paraphrases:
+      - "What's the required notice period before a customer renewal?"
+      - "How far ahead of renewal do we have to tell the customer?"
+    hard_negatives:
+      - {text: "How many days after renewal can a customer cancel?", type: action}
+      - {text: "How many days before renewal must we notify a customer in the EU?", type: entity}
+  - id: sec-incident-report
+    canonical: How do I report a lost company laptop?
+    paraphrases:
+      - "What should I do if I lose my work laptop?"
+      - "Who do I tell when my company laptop goes missing?"
+    hard_negatives:
+      - {text: "How do I report a lost company phone?", type: object}
+      - {text: "How do I wipe a lost laptop remotely for all users?", type: scope}
+  - id: sec-usb-policy
+    canonical: Am I allowed to use personal USB drives on my work laptop?
+    paraphrases:
+      - "Can I plug my own USB stick into my work computer?"
+      - "Is it permitted to use a personal flash drive on a company laptop?"
+    hard_negatives:
+      - {text: "How do I disable USB blocking on my work laptop?", type: polarity}
+      - {text: "Am I allowed to use personal USB drives on the production servers?", type: object}
+  - id: sec-password-manager
+    canonical: Which password manager does the company approve?
+    paraphrases:
+      - "What password manager are we allowed to use?"
+      - "Which password vault is officially supported?"
+    hard_negatives:
+      - {text: "How do I view another user's saved passwords in the password manager?", type: ownership}
+      - {text: "Which password manager was approved in 2020?", type: timeframe}
+  - id: sec-vuln-log4j
+    canonical: Is CVE-2021-44228 in the CISA KEV catalog?
+    paraphrases:
+      - "Does CISA list CVE-2021-44228 as a known exploited vulnerability?"
+      - "Is CVE-2021-44228 on the known exploited vulnerabilities list?"
+    hard_negatives:
+      - {text: "Is CVE-2021-45046 in the CISA KEV catalog?", type: entity}
+      - {text: "Is CVE-2022-22965 in the CISA KEV catalog?", type: entity}
+  - id: sec-access-review
+    canonical: How do I request admin access to my laptop?
+    paraphrases:
+      - "What's the process to get local admin rights on my laptop?"
+      - "How can I ask for administrator privileges on my computer?"
+    hard_negatives:
+      - {text: "How do I request admin access to my colleague's laptop?", type: ownership}
+      - {text: "How do I request domain admin access for the whole company?", type: scope}
+      - {text: "How do I remove admin access from my laptop?", type: action}
+unrelated:
+  - What is the capital of Australia?
+  - How do I bake sourdough bread?
+  - Summarize the plot of Hamlet in two sentences.
+  - What time zone is Singapore in?
+  - Explain what a Kubernetes pod is.
+  - How many ounces are in a pound?
+  - Recommend a book about negotiation.
+  - What does GDPR stand for?

@@ -1,0 +1,81 @@
+{
+  "cisa_kev": {
+    "catalog_released": "2026-09-22T19:02:09.9788Z",
+    "fields_used": [
+      "cveID",
+      "vendorProject",
+      "product",
+      "vulnerabilityName",
+      "dateAdded",
+      "shortDescription",
+      "requiredAction",
+      "dueDate",
+      "knownRansomwareCampaignUse"
+    ],
+    "file": "datasets/raw/cisa_kev/known_exploited_vulnerabilities.json",
+    "license": "Public domain (U.S. Government work); CISA KEV terms of use",
+    "publisher": "Cybersecurity and Infrastructure Security Agency (CISA)",
+    "retrieved_at": "2026-09-23T01:08:03+00:00",
+    "rows": 1721,
+    "sha256": "b912a7f9a4c4630455d09b04946664a5dccd8b1a7c987010d89793e1a5b78c91",
+    "source": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+    "version": "2026.09.22"
+  },
+  "gsm8k": {
+    "fields_used": [
+      "question",
+      "answer (final number after ####)"
+    ],
+    "file": "datasets/raw/gsm8k/gsm8k_test.jsonl",
+    "license": "MIT",
+    "publisher": "OpenAI (Cobbe et al. 2021)",
+    "retrieved_at": "2026-09-23T01:07:59+00:00",
+    "rows": 1319,
+    "sha256": "8664ce20a0088b460a1afb39a6fe8fb383a46cdf3bf628a18a0351043bc801ef",
+    "source": "https://huggingface.co/datasets/openai/gsm8k",
+    "version": "HF openai/gsm8k main/test"
+  },
+  "mmlu": {
+    "fields_used": [
+      "question",
+      "choices",
+      "answer"
+    ],
+    "file": "datasets/raw/mmlu/mmlu_subset_test.jsonl",
+    "license": "MIT",
+    "publisher": "Hendrycks et al. (Center for AI Safety)",
+    "retrieved_at": "2026-09-23T01:07:56+00:00",
+    "rows": 2912,
+    "sha256": "3ca0c981b49b6e91acfeb0d3d7e4b9a385e3a29d302760e23df04a5d47975592",
+    "source": "https://huggingface.co/datasets/cais/mmlu",
+    "subset": [
+      "computer_security",
+      "college_computer_science",
+      "high_school_computer_science",
+      "business_ethics",
+      "management",
+      "marketing",
+      "professional_accounting",
+      "econometrics",
+      "global_facts",
+      "professional_law",
+      "electrical_engineering"
+    ],
+    "version": "HF cais/mmlu (test split)"
+  },
+  "paws": {
+    "fields_used": [
+      "sentence1",
+      "sentence2",
+      "label"
+    ],
+    "file": "datasets/raw/paws/paws_labeled_final_test.jsonl",
+    "license": "Free to use for any purpose (per dataset card; original PAWS-Wiki terms)",
+    "publisher": "Google Research (Zhang et al. 2019)",
+    "retrieved_at": "2026-09-23T01:08:03+00:00",
+    "rows": 8000,
+    "sha256": "024901ec090436669fa0dc8abb61f6c4a7076a21f189d0e6db1bca8fa474375c",
+    "source": "https://huggingface.co/datasets/google-research-datasets/paws",
+    "version": "labeled_final/test"
+  }
+}

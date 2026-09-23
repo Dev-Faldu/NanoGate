@@ -1,0 +1,19 @@
+# SCENARIO ASSUMPTIONS — never mixed with measured data. Shown under FinOps > Scenario only.
+# Edit freely; every value here is an assumption, not a measurement.
+label: Scenario assumption
+hardware:
+  name: HP ZGX Nano AI Station (GB10)
+  purchase_price_usd: 3999        # assumption: list-price class of GB10 desktop systems; replace with your PO price
+  useful_life_years: 3
+electricity:
+  price_usd_per_kwh: 0.17         # assumption: approximate U.S. commercial average; replace with your tariff
+  measured_energy_source: "Per-request GPU energy is measured via NVML total-energy counter; whole-system power is not measured."
+workload:
+  annual_requests: 2000000        # assumption
+  avg_prompt_tokens: 350          # assumption (or use measured average from the Measured tab)
+  avg_completion_tokens: 250      # assumption
+  cache_hit_rate: null            # null -> use measured session value when available
+  local_coverage: null            # null -> use measured router coverage from latest benchmark
+comparison:
+  provider: openai
+  model: gpt-4.1-mini             # must exist in config/pricing.yaml
