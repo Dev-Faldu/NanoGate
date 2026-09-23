@@ -54,6 +54,14 @@ See `examples/openai_client.py` (sync + streaming, reading `x-nanogate-*` header
 Models: `nanogate-auto` (policy + router decide), `nanogate-local`, `nanogate-local-large`, `nanogate-remote` (checked against
 policy; `ROUTE_ESCALATION_DENIED` when not permitted).
 
+## Opening the dashboard remotely
+The gateway listens on `127.0.0.1` only. From a laptop on the same Tailscale network, run a relay that admits only your
+laptop's Tailscale IP (find it with `tailscale status`), then open `http://<zgx-tailscale-ip>:8080`:
+```bash
+.venv/bin/python scripts/tailnet_relay.py --allow <your-laptop-tailscale-ip>   # repeat --allow per teammate
+```
+Other peers are refused and logged; every request still needs an API key. (VS Code port forwarding also works when the tunnel is healthy.)
+
 ## ZGX / model setup notes
 - GB10 is compute capability 12.1; Ollama's `cuda_v13` backend is used automatically (`scripts/runtime.sh`).
 - `nvidia-smi` reports GPU memory as *Not Supported* on the unified-memory GB10; NanoGate reads unified memory from
