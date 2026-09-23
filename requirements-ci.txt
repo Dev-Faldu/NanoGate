@@ -1,0 +1,20 @@
+# Lightweight dependency set for CI (GitHub runners: x86_64, no GPU, no local model).
+# ML-heavy packages (torch, sentence-transformers) are not installed; CI runs with
+# NANOGATE_LOAD_ML=0 and model-dependent tests skip with an explicit reason.
+fastapi==0.141.1
+uvicorn==0.53.0
+httpx==0.28.1
+openai==3.19.0
+pydantic==2.13.5
+PyYAML==6.0.3
+numpy==2.4.6
+scikit-learn==1.9.1
+joblib==1.6.0
+psutil==7.2.2
+nvidia-ml-py==13.610.43
+prometheus_client==0.26.0
+presidio_analyzer==2.2.364
+presidio_anonymizer==2.2.364
+spacy==3.8.16
+pytest==9.1.1
+pytest-asyncio==1.4.0

@@ -80,11 +80,10 @@ def test_openapi_documents_headers(client):
 
 # ---- real-model integration (skipped with reason when the model is down) ----------------------
 @needs_model
-def test_openai_sdk_sync(app, keys):
+def test_openai_sdk_sync(client, keys):
+    """Stock OpenAI SDK; only base_url and api_key differ (TestClient is an httpx.Client)."""
     from openai import OpenAI
-    import httpx
-    c = OpenAI(base_url="http://testserver/v1", api_key=keys["acme/it"],
-               http_client=httpx.Client(transport=httpx.ASGITransport(app=app), base_url="http://testserver"))
+    c = OpenAI(base_url="http://testserver/v1", api_key=keys["acme/it"], http_client=client)
     r = c.chat.completions.with_raw_response.create(model="nanogate-auto",
                                                      messages=[{"role": "user", "content": "Name one benefit of a VPN in one sentence."}])
     resp = r.parse()
@@ -102,7 +101,11 @@ def test_openai_sdk_stream(client, keys):
 
 
 @needs_model
-def test_demo_cache_sequence(client, keys):
+def test_demo_cache_sequence(client, keys, svc):
+    if svc.cache is None:
+        pytest.skip("semantic cache not loaded (NANOGATE_LOAD_ML=0)")
+    if not svc.router.available:
+        pytest.skip("router not trained: answers are cached only after the router accepts them (make train-router)")
     h = auth(keys["acme/it"])
     body = lambda q: {"messages": [{"role": "user", "content": q}], "temperature": 0}
     client.post("/v1/chat/completions", headers=h, json=body("How do I reset the VPN client?"))

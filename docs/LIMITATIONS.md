@@ -19,6 +19,8 @@ Stated plainly so that nothing is over-claimed.
 ## AI components
 - **Router** is trained on public benchmark tasks with automatic rubrics; enterprise free-form answers are out of
   distribution. Discrimination on the partial run was weak (see AI_EVALUATION); results are reported as measured.
+- **No cache writes without a router**: answers are written to the verified cache only after the router accepts them, so
+  until `make train-router` has produced artifacts the cache never fills (requests carry `ROUTER_UNAVAILABLE`).
 - **Streaming cannot escalate**: once tokens are sent, the router scores post-hoc (`ROUTER_POST_HOC_STREAM`).
 - **Cache verifier**: 97.4% hard-negative rejection on the authored test split — not 100%. A known miss is a jurisdiction
   qualifier ("…in the EU?"). The authored set was written by the same team as the slot rules (disclosed); PAWS shows a

@@ -18,7 +18,8 @@ def ns(svc, tenant="acme", dept="it", policy=None, sysh="s0", ctx="c0"):
 @pytest.fixture()
 def cache(svc):
     c = svc.cache
-    assert c is not None, svc.ml_error
+    if c is None:
+        pytest.skip(f"semantic cache not loaded (NANOGATE_LOAD_ML=0 or model assets missing): {svc.ml_error}")
     svc.db.execute("DELETE FROM cache_entries")
     c._invalidate_index()
     c.revoked_sources.clear()
