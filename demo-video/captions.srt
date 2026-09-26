@@ -1,0 +1,110 @@
+1
+00:00:00,600 --> 00:00:08,401
+This is NanoGate: a local AI gateway on an HP ZGX Nano.
+Every AI request takes the cheapest safe route, with
+proof.
+
+2
+00:00:09,650 --> 00:00:14,479
+An admin signs in to the command center. Every number here
+is measured on this device.
+
+3
+00:00:12,179 --> 00:00:15,593
+Hover any tile or step for a plain-language explanation.
+
+4
+00:00:16,250 --> 00:00:19,233
+Let's send real requests through the full pipeline.
+
+5
+00:00:22,750 --> 00:00:26,488
+An IT question is answered by the local model on the GB10.
+
+6
+00:00:26,980 --> 00:00:30,927
+A request containing a secret key is blocked before any
+model sees it.
+
+7
+00:00:34,410 --> 00:00:39,344
+HR personal data is detected, and the answer is generated
+on this device only.
+
+8
+00:00:38,940 --> 00:00:44,501
+Security questions are grounded in the CISA vulnerability
+catalog, and reused once verified.
+
+9
+00:00:40,870 --> 00:00:43,737
+Every decision is sealed into a tamper-evident receipt.
+
+10
+00:00:47,240 --> 00:00:51,500
+Anyone can verify it. Change one field, and the tamper
+test catches it.
+
+11
+00:00:53,570 --> 00:00:56,948
+Every request, answered or denied, stays on record.
+
+12
+00:00:56,469 --> 00:01:00,997
+Company documents make answers specific. This runbook is
+indexed on the device.
+
+13
+00:01:04,500 --> 00:01:08,993
+The NanoGate Assistant answers questions from live data,
+on the local models.
+
+14
+00:01:12,500 --> 00:01:15,379
+It can also prepare tasks, like taking a backup.
+
+15
+00:01:18,870 --> 00:01:21,424
+Nothing changes until an admin confirms.
+
+16
+00:01:21,800 --> 00:01:27,163
+Every app, employee and auditor gets their own key: shown
+once, revocable any time.
+
+17
+00:01:30,400 --> 00:01:33,151
+Departments carry their own policies and budgets.
+
+18
+00:01:35,570 --> 00:01:38,379
+Alerts reach Slack, Teams, or any webhook.
+
+19
+00:01:40,140 --> 00:01:46,502
+Operations covers HTTPS, backups, retention, erasure
+requests and audit exports.
+
+20
+00:01:48,640 --> 00:01:52,448
+Finance sees measured cost per department, ready for
+chargeback.
+
+21
+00:01:55,940 --> 00:01:58,087
+And all of it runs on hardware you own.
+
+22
+00:01:58,070 --> 00:02:01,611
+Employees get a private assistant that follows their
+team's rules.
+
+23
+00:02:05,100 --> 00:02:09,871
+Its answer comes from the company runbook, generated on
+this device, with a receipt.
+
+24
+00:02:09,819 --> 00:02:14,533
+NanoGate. Safer, cheaper, provable AI, on hardware you
+own.
