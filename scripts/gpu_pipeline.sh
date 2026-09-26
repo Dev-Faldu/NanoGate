@@ -28,10 +28,10 @@ pgrep -f "scripts/power_monitor.py" >/dev/null || setsid nohup $PY scripts/power
 scripts/runtime.sh start 9>&- || exit 1
 sleep 3
 
-step router_data_local   $PY bench/generate_router_data.py --tier local --n-mmlu 900 --n-gsm8k 450 --n-kev 450 --concurrency 2 || exit 1
-step router_data_large   $PY bench/generate_router_data.py --tier local_large --n-mmlu 900 --n-gsm8k 450 --n-kev 450 --concurrency 2 --only-split test || exit 1
+step router_data_local   $PY bench/generate_router_data.py --tier local --n-mmlu 900 --n-gsm8k 450 --n-kev 450 --concurrency 6 || exit 1
+step router_data_large   $PY bench/generate_router_data.py --tier local_large --n-mmlu 900 --n-gsm8k 450 --n-kev 450 --concurrency 4 --only-split test || exit 1
 step train_router        bash -c "cd bench && ../$PY train_router.py" || exit 1
-step gateway_reload      bash -c "scripts/gateway.sh restart && $PY scripts/wait_ready.py" || exit 1
+step gateway_reload      bash -c "scripts/gateway.sh restart 9>&- && $PY scripts/wait_ready.py" || exit 1
 # each bench is followed by a validity gate (bench/validate_run.py): a run with a dead model is marked INVALID, not done
 step attack_suite        bash -c "cd bench && ../$PY attack_suite.py && ../$PY validate_run.py security" || exit 1
 step load_test           bash -c "cd bench && ../$PY load_test.py --levels 1,2,4,8 --per-level 16 --max-tokens 128 && ../$PY validate_run.py load" || exit 1

@@ -1,0 +1,322 @@
+{
+  "run_id": "20260926T032443Z-report-54ac1b",
+  "rows": [
+    {
+      "metric": "Local-only accuracy (task rubric)",
+      "result": "74.3%",
+      "n": "362",
+      "run_id": "20260926T025050Z-router-e0f152",
+      "status": "Measured"
+    },
+    {
+      "metric": "Larger-tier-only accuracy",
+      "result": "84.3%",
+      "n": "362",
+      "run_id": "20260926T025050Z-router-e0f152",
+      "status": "Measured"
+    },
+    {
+      "metric": "Calibrated logistic router: AUROC / ECE / Brier / AURC",
+      "result": "0.849 / 0.040 / 0.136 / 0.084",
+      "n": "362",
+      "run_id": "20260926T025050Z-router-e0f152",
+      "status": "Measured"
+    },
+    {
+      "metric": "Uncalibrated logistic: AUROC / ECE / Brier / AURC",
+      "result": "0.856 / 0.049 / 0.132 / 0.080",
+      "n": "362",
+      "run_id": "20260926T025050Z-router-e0f152",
+      "status": "Measured"
+    },
+    {
+      "metric": "Raw log-prob threshold: AUROC / ECE / Brier / AURC",
+      "result": "0.768 / 0.053 / 0.163 / 0.107",
+      "n": "362",
+      "run_id": "20260926T025050Z-router-e0f152",
+      "status": "Measured"
+    },
+    {
+      "metric": "Calibrated gradient boosting: AUROC / ECE / Brier / AURC",
+      "result": "0.871 / 0.053 / 0.128 / 0.081",
+      "n": "362",
+      "run_id": "20260926T025050Z-router-e0f152",
+      "status": "Measured"
+    },
+    {
+      "metric": "Router local coverage at validation threshold",
+      "result": "50.0%",
+      "n": "362",
+      "run_id": "20260926T025050Z-router-e0f152",
+      "status": "Measured"
+    },
+    {
+      "metric": "Router selective accuracy at threshold",
+      "result": "95.0%",
+      "n": "362",
+      "run_id": "20260926T025050Z-router-e0f152",
+      "status": "Measured"
+    },
+    {
+      "metric": "Cost\u2013quality: Local only (hf:Qwen/Qwen2.5-3B-Instruct)",
+      "result": "acc 74.3%, 5.15 s/request",
+      "n": "362",
+      "run_id": "20260926T025050Z-router-e0f152",
+      "status": "Measured"
+    },
+    {
+      "metric": "Cost\u2013quality: Larger tier only (hf:Qwen/Qwen2.5-14B-Instruct)",
+      "result": "acc 84.3%, 14.43 s/request",
+      "n": "362",
+      "run_id": "20260926T025050Z-router-e0f152",
+      "status": "Measured"
+    },
+    {
+      "metric": "Cost\u2013quality: NanoGate router (local \u2192 local-large)",
+      "result": "acc 83.7%, 13.43 s/request",
+      "n": "362",
+      "run_id": "20260926T025050Z-router-e0f152",
+      "status": "Measured"
+    },
+    {
+      "metric": "Cost\u2013quality: Oracle escalation (upper bound)",
+      "result": "acc 87.6%, 10.09 s/request",
+      "n": "362",
+      "run_id": "20260926T025050Z-router-e0f152",
+      "status": "Oracle bound"
+    },
+    {
+      "metric": "Cosine-only semantic cache: hit rate / precision / false-hit rate",
+      "result": "10.0% / 50.0% / 9.3%",
+      "n": "80",
+      "run_id": "20260926T014458Z-cache-776a9c",
+      "status": "Measured"
+    },
+    {
+      "metric": "Cosine-only semantic cache: hard-negative rejection",
+      "result": "89.7%",
+      "n": "39",
+      "run_id": "20260926T014458Z-cache-776a9c",
+      "status": "Measured"
+    },
+    {
+      "metric": "Verified semantic cache: hit rate / precision / false-hit rate",
+      "result": "45.0% / 97.2% / 2.3%",
+      "n": "80",
+      "run_id": "20260926T014458Z-cache-776a9c",
+      "status": "Measured"
+    },
+    {
+      "metric": "Verified semantic cache: hard-negative rejection",
+      "result": "97.4%",
+      "n": "39",
+      "run_id": "20260926T014458Z-cache-776a9c",
+      "status": "Measured"
+    },
+    {
+      "metric": "Verified cache lookup latency P50 / P95 (cuda)",
+      "result": "17 ms / 23 ms",
+      "n": "80",
+      "run_id": "20260926T014458Z-cache-776a9c",
+      "status": "Measured"
+    },
+    {
+      "metric": "Cross-tenant cache leaks",
+      "result": "0",
+      "n": "18",
+      "run_id": "20260926T014458Z-cache-776a9c",
+      "status": "Measured"
+    },
+    {
+      "metric": "Namespace isolation leaks (tenant/dept/policy/context/system)",
+      "result": "0",
+      "n": "90",
+      "run_id": "20260926T014458Z-cache-776a9c",
+      "status": "Measured"
+    },
+    {
+      "metric": "Stale source / revoked source / TTL rejected",
+      "result": "True / True / True",
+      "n": "3",
+      "run_id": "20260926T014458Z-cache-776a9c",
+      "status": "Measured"
+    },
+    {
+      "metric": "PAWS false-accept rate: cosine-only vs verified",
+      "result": "100.0% vs 40.9%",
+      "n": "550",
+      "run_id": "20260926T014458Z-cache-776a9c",
+      "status": "Measured"
+    },
+    {
+      "metric": "PAWS true-accept rate: cosine-only vs verified",
+      "result": "100.0% vs 94.4%",
+      "n": "450",
+      "run_id": "20260926T014458Z-cache-776a9c",
+      "status": "Measured"
+    },
+    {
+      "metric": "DLP Regex baseline: span recall / precision / F1",
+      "result": "47.1% / 88.4% / 0.614",
+      "n": "340",
+      "run_id": "20260923T024225Z-dlp-6fda62",
+      "status": "Measured"
+    },
+    {
+      "metric": "DLP Presidio baseline: span recall / precision / F1",
+      "result": "22.1% / 100.0% / 0.361",
+      "n": "340",
+      "run_id": "20260923T024225Z-dlp-6fda62",
+      "status": "Measured"
+    },
+    {
+      "metric": "DLP Layered NanoGate DLP: span recall / precision / F1",
+      "result": "100.0% / 99.7% / 0.999",
+      "n": "340",
+      "run_id": "20260923T024225Z-dlp-6fda62",
+      "status": "Measured"
+    },
+    {
+      "metric": "DLP layered: secret recall / document false-positive rate",
+      "result": "100.0% / 0.3%",
+      "n": "620",
+      "run_id": "20260923T024225Z-dlp-6fda62",
+      "status": "Measured"
+    },
+    {
+      "metric": "Security attack suite: pass / fail / skipped",
+      "result": "101 / 0 / 0",
+      "n": "101",
+      "run_id": "20260926T025136Z-security-86c406",
+      "status": "Measured"
+    },
+    {
+      "metric": "Load c=1: latency P50/P95, TTFT P50, agg tok/s, errors",
+      "result": "3.07 s / 4.29 s, 598 ms, 25.8, 0.0%",
+      "n": "16",
+      "run_id": "20260926T030135Z-load-d9aacf",
+      "status": "Measured"
+    },
+    {
+      "metric": "Load c=2: latency P50/P95, TTFT P50, agg tok/s, errors",
+      "result": "2.74 s / 4.55 s, 939 ms, 48.6, 0.0%",
+      "n": "16",
+      "run_id": "20260926T030135Z-load-d9aacf",
+      "status": "Measured"
+    },
+    {
+      "metric": "Load c=4: latency P50/P95, TTFT P50, agg tok/s, errors",
+      "result": "1.90 s / 4.43 s, 708 ms, 80.1, 0.0%",
+      "n": "16",
+      "run_id": "20260926T030135Z-load-d9aacf",
+      "status": "Measured"
+    },
+    {
+      "metric": "Load c=8: latency P50/P95, TTFT P50, agg tok/s, errors",
+      "result": "4.90 s / 6.94 s, 2.73 s, 63.6, 0.0%",
+      "n": "16",
+      "run_id": "20260926T030135Z-load-d9aacf",
+      "status": "Measured"
+    },
+    {
+      "metric": "Max reliable concurrency tested (0 errors)",
+      "result": "8",
+      "n": "4",
+      "run_id": "20260926T030135Z-load-d9aacf",
+      "status": "Measured"
+    },
+    {
+      "metric": "Cold vs warm TTFT",
+      "result": "58 ms vs 63 ms",
+      "n": "2",
+      "run_id": "20260926T030135Z-load-d9aacf",
+      "status": "Measured"
+    },
+    {
+      "metric": "Model server cold start (vLLM restart until serving)",
+      "result": "65.16 s",
+      "n": "1",
+      "run_id": "20260926T030135Z-load-d9aacf",
+      "status": "Measured"
+    },
+    {
+      "metric": "E2E local coverage",
+      "result": "100.0%",
+      "n": "54",
+      "run_id": "20260926T030415Z-e2e-5ab7c7",
+      "status": "Measured"
+    },
+    {
+      "metric": "E2E latency P50 / P95",
+      "result": "5.96 s / 43.25 s",
+      "n": "54",
+      "run_id": "20260926T030415Z-e2e-5ab7c7",
+      "status": "Measured"
+    },
+    {
+      "metric": "E2E receipts verified",
+      "result": "60/60",
+      "n": "60",
+      "run_id": "20260926T030415Z-e2e-5ab7c7",
+      "status": "Measured"
+    },
+    {
+      "metric": "E2E remote bytes on sensitive requests (app-layer meter)",
+      "result": "0",
+      "n": "12",
+      "run_id": "20260926T030415Z-e2e-5ab7c7",
+      "status": "Measured"
+    },
+    {
+      "metric": "Measured cost (configured rates \u00d7 metered tokens)",
+      "result": "$0.000000",
+      "n": "54",
+      "run_id": "20260926T030415Z-e2e-5ab7c7",
+      "status": "Measured"
+    },
+    {
+      "metric": "Same tokens at reference hosted rate (counterfactual)",
+      "result": "$0.017155",
+      "n": "54",
+      "run_id": "20260926T030415Z-e2e-5ab7c7",
+      "status": "Measured"
+    },
+    {
+      "metric": "Tokens avoided by verified cache",
+      "result": "777",
+      "n": "54",
+      "run_id": "20260926T030415Z-e2e-5ab7c7",
+      "status": "Measured"
+    },
+    {
+      "metric": "Offline core verification (process_socket_guard)",
+      "result": "PASS",
+      "n": "1",
+      "run_id": "var/offline_test.json",
+      "status": "Measured"
+    }
+  ],
+  "missing": [],
+  "targets": [
+    [
+      "Cross-tenant cache leaks",
+      "0"
+    ],
+    [
+      "Verified cache false-hit rate",
+      "\u2264 1%"
+    ],
+    [
+      "Sensitive remote egress bytes",
+      "0"
+    ],
+    [
+      "Receipts verifying",
+      "100%"
+    ],
+    [
+      "Security suite failures",
+      "0"
+    ]
+  ]
+}

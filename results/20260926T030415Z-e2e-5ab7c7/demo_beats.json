@@ -1,0 +1,197 @@
+[
+  {
+    "beat": "1 \u00b7 Local intelligence",
+    "route": "cache",
+    "reason": "CACHE_VERIFIED",
+    "reason_codes": [
+      "REMOTE_DISABLED",
+      "CACHE_VERIFIED"
+    ],
+    "receipt_id": "rcpt_2c1a3863db074ab192f3",
+    "receipt_valid": true,
+    "latency_ms": 92.9,
+    "ttft_ms": null,
+    "prompt_tokens": null,
+    "completion_tokens": null,
+    "cache": {
+      "decision": "CACHE_VERIFIED",
+      "similarity": 1.0,
+      "verifier": 0.9921,
+      "conflicts": []
+    },
+    "router": {
+      "raw_score": null,
+      "p_error": null,
+      "threshold": null,
+      "accept_local": null
+    },
+    "data_class": "Internal",
+    "remote_bytes_out": 0,
+    "tokens_avoided": 344,
+    "streamed": true
+  },
+  {
+    "beat": "2 \u00b7 Verified reuse",
+    "route": "cache",
+    "reason": "CACHE_VERIFIED",
+    "reason_codes": [
+      "REMOTE_DISABLED",
+      "CACHE_VERIFIED"
+    ],
+    "receipt_id": "rcpt_c817a98468484d3f9e8e",
+    "receipt_valid": true,
+    "latency_ms": 64.7,
+    "ttft_ms": null,
+    "prompt_tokens": null,
+    "completion_tokens": null,
+    "cache": {
+      "decision": "CACHE_VERIFIED",
+      "similarity": 0.9013,
+      "verifier": 0.9336,
+      "conflicts": []
+    },
+    "router": {
+      "raw_score": null,
+      "p_error": null,
+      "threshold": null,
+      "accept_local": null
+    },
+    "data_class": "Internal",
+    "remote_bytes_out": 0,
+    "tokens_avoided": 344
+  },
+  {
+    "beat": "3 \u00b7 Cache security (hard negative)",
+    "route": "local_large",
+    "reason": "CACHE_HARD_NEGATIVE",
+    "reason_codes": [
+      "REMOTE_DISABLED",
+      "CACHE_HARD_NEGATIVE",
+      "LOCAL_LARGE_SELECTED"
+    ],
+    "receipt_id": "rcpt_61c0b510627943678309",
+    "receipt_valid": true,
+    "latency_ms": 65258.6,
+    "ttft_ms": 166.0,
+    "prompt_tokens": 39,
+    "completion_tokens": 408,
+    "cache": {
+      "decision": "CACHE_HARD_NEGATIVE",
+      "similarity": 0.8668,
+      "verifier": 0.0008,
+      "conflicts": [
+        "ownership: one request targets another person's resource",
+        "authorization: credential operation on a different principal",
+        "object: credential vs non-credential target"
+      ]
+    },
+    "router": {
+      "raw_score": 0.9841,
+      "p_error": 1.0,
+      "threshold": 0.22581,
+      "accept_local": false
+    },
+    "data_class": "Internal",
+    "remote_bytes_out": 0,
+    "tokens_avoided": 0
+  },
+  {
+    "beat": "4 \u00b7 Privacy (synthetic PII)",
+    "route": "local",
+    "reason": "SENSITIVE_LOCAL_ONLY",
+    "reason_codes": [
+      "SENSITIVE_LOCAL_ONLY",
+      "CACHE_INELIGIBLE",
+      "LOCAL_CONFIDENT"
+    ],
+    "receipt_id": "rcpt_5d865e7e20ff493bb67f",
+    "receipt_valid": true,
+    "latency_ms": 3041.0,
+    "ttft_ms": 43.73,
+    "prompt_tokens": 80,
+    "completion_tokens": 85,
+    "cache": {
+      "decision": "CACHE_INELIGIBLE",
+      "similarity": null,
+      "verifier": null,
+      "conflicts": null
+    },
+    "router": {
+      "raw_score": 0.02636,
+      "p_error": 0.05263,
+      "threshold": 0.22581,
+      "accept_local": true
+    },
+    "data_class": "Restricted",
+    "remote_bytes_out": 0,
+    "tokens_avoided": null
+  },
+  {
+    "beat": "5 \u00b7 Routing (hard public question, MMLU professional_law)",
+    "route": "local_large",
+    "reason": "CACHE_HARD_NEGATIVE",
+    "reason_codes": [
+      "REMOTE_DISABLED",
+      "CACHE_HARD_NEGATIVE",
+      "LOCAL_LARGE_SELECTED"
+    ],
+    "receipt_id": "rcpt_52a066b8c29947edb397",
+    "receipt_valid": true,
+    "latency_ms": 24996.8,
+    "ttft_ms": 261.68,
+    "prompt_tokens": 328,
+    "completion_tokens": 103,
+    "cache": {
+      "decision": "CACHE_HARD_NEGATIVE",
+      "similarity": 0.7394,
+      "verifier": 0.0002,
+      "conflicts": [
+        "timeframe: ['may'] vs []",
+        "entities: numbers ['9'] vs ['2']"
+      ]
+    },
+    "router": {
+      "raw_score": 0.62393,
+      "p_error": 0.68,
+      "threshold": 0.22581,
+      "accept_local": false
+    },
+    "data_class": "Internal",
+    "remote_bytes_out": 0,
+    "tokens_avoided": 0,
+    "gold": "C",
+    "model_answer": "B",
+    "correct": false
+  },
+  {
+    "beat": "6 \u00b7 Resilience (remote connector outage)",
+    "route": "local",
+    "reason": "CONNECTOR_UNAVAILABLE",
+    "reason_codes": [
+      "CACHE_INELIGIBLE",
+      "CONNECTOR_UNAVAILABLE",
+      "REMOTE_UNAVAILABLE"
+    ],
+    "receipt_id": "rcpt_7c99d8b09e6141b39b29",
+    "receipt_valid": true,
+    "latency_ms": 1147.7,
+    "ttft_ms": 50.36,
+    "prompt_tokens": 39,
+    "completion_tokens": 30,
+    "cache": {
+      "decision": "CACHE_INELIGIBLE",
+      "similarity": null,
+      "verifier": null,
+      "conflicts": null
+    },
+    "router": {
+      "raw_score": 0.01744,
+      "p_error": 0.05263,
+      "threshold": 0.22581,
+      "accept_local": true
+    },
+    "data_class": "Internal",
+    "remote_bytes_out": 0,
+    "tokens_avoided": null
+  }
+]

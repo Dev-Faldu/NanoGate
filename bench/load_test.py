@@ -107,15 +107,20 @@ async def level(key: str, conc: int, ps: list[str], max_tokens: int) -> dict:
         wall = time.perf_counter() - t0
         s.stop_ev.set()
         s.join()
-    ok = [r for r in res if r["status"] == 200 and r["completion_tokens"]]
-    lat = [r["latency_ms"] for r in ok]
-    ttft = [r["ttft_ms"] for r in ok if r["ttft_ms"] is not None]
-    toks = sum(r["completion_tokens"] for r in ok)
-    per_req_tps = [r["completion_tokens"] / ((r["latency_ms"] - (r["ttft_ms"] or 0)) / 1000) for r in ok
+    # success = answered (HTTP 200). A verified cache hit is a correct answer with no generation, so it counts as
+    # success; generation metrics (TTFT, tokens/s, generated latency) come only from requests that generated tokens.
+    ok = [r for r in res if r["status"] == 200]
+    gen = [r for r in ok if r["completion_tokens"]]
+    lat = [r["latency_ms"] for r in gen]
+    ttft = [r["ttft_ms"] for r in gen if r["ttft_ms"] is not None]
+    toks = sum(r["completion_tokens"] for r in gen)
+    per_req_tps = [r["completion_tokens"] / ((r["latency_ms"] - (r["ttft_ms"] or 0)) / 1000) for r in gen
                    if r["latency_ms"] and r["ttft_ms"] and r["latency_ms"] > r["ttft_ms"]]
-    return {"concurrency": conc, "requests": len(res), "ok": len(ok), "error_rate": 1 - len(ok) / len(res),
+    return {"concurrency": conc, "requests": len(res), "ok": len(ok), "generated": len(gen), "cache_hits": len(ok) - len(gen),
+            "error_rate": 1 - len(ok) / len(res),
             "errors": sorted({str(r["status"]) for r in res if r not in ok}),
-            "latency_ms": {"p50": percentile(lat, 50), "p95": percentile(lat, 95), "mean": sum(lat) / len(lat) if lat else None},
+            "latency_ms": {"p50": percentile(lat, 50), "p95": percentile(lat, 95), "mean": sum(lat) / len(lat) if lat else None,
+                           "basis": "requests that generated tokens"},
             "ttft_ms": {"p50": percentile(ttft, 50), "p95": percentile(ttft, 95)},
             "throughput_rps": len(ok) / wall, "aggregate_tokens_per_s": toks / wall,
             "per_request_decode_tokens_per_s": {"p50": percentile(per_req_tps, 50)}, "wall_s": wall,

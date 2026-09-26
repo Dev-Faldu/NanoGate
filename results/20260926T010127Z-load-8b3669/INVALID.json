@@ -1,0 +1,9 @@
+{
+  "run_id": "20260926T010127Z-load-8b3669",
+  "reasons": [
+    "concurrency 1: 0 successful requests (['MODEL_UNAVAILABLE'])",
+    "concurrency 2: 0 successful requests (['MODEL_UNAVAILABLE'])",
+    "concurrency 4: 0 successful requests (['MODEL_UNAVAILABLE'])",
+    "concurrency 8: 0 successful requests (['MODEL_UNAVAILABLE'])"
+  ]
+}

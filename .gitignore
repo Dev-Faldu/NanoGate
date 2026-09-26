@@ -19,3 +19,6 @@ dev_keys.json
 # large raw public data snapshots are re-downloadable (registry.json keeps hashes)
 datasets/raw/
 frontend/e2e/screenshots/
+
+# router training runs: large, regenerable (make router-data); their SHA-256 is recorded in artifacts/router/meta.json
+datasets/processed/router_runs/

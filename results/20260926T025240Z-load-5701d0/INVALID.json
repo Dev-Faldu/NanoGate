@@ -1,0 +1,7 @@
+{
+  "run_id": "20260926T025240Z-load-5701d0",
+  "reasons": [
+    "concurrency 4: error rate 6% > 5%"
+  ],
+  "note": "The one 'error' was a verified cache hit (HTTP 200, route cache, 0 generated tokens) that bench/load_test.py counted as a failure. Classifier fixed (success = answered; generation metrics from generating requests) and re-run."
+}

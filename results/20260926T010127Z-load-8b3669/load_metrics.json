@@ -1,0 +1,712 @@
+{
+  "run_id": "20260926T010127Z-load-8b3669",
+  "model": "qwen2.5:3b-instruct",
+  "cold_warm": {
+    "available": false,
+    "reason": "cannot unload model: All connection attempts failed"
+  },
+  "levels": [
+    {
+      "concurrency": 1,
+      "requests": 16,
+      "ok": 0,
+      "error_rate": 1.0,
+      "errors": [
+        "MODEL_UNAVAILABLE"
+      ],
+      "latency_ms": {
+        "p50": null,
+        "p95": null,
+        "mean": null
+      },
+      "ttft_ms": {
+        "p50": null,
+        "p95": null
+      },
+      "throughput_rps": 0.0,
+      "aggregate_tokens_per_s": 0.0,
+      "per_request_decode_tokens_per_s": {
+        "p50": null
+      },
+      "wall_s": 3.4738644770000064,
+      "routes": {},
+      "device": {
+        "samples": 7,
+        "gpu_util_pct": {
+          "mean": 3.2857142857142856,
+          "max": 11
+        },
+        "gpu_power_w": {
+          "mean": 13.54742857142857,
+          "max": 20.553
+        },
+        "gpu_temp_c": {
+          "mean": 45.57142857142857,
+          "max": 46
+        },
+        "mem_used_bytes": {
+          "mean": 7866397257.142858,
+          "max": 7871418368
+        }
+      },
+      "raw": [
+        {
+          "ttft_ms": null,
+          "latency_ms": 180.32011700000794,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 175.14222999997742,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 189.93858700000033,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 253.26638500001764,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 179.18546699999638,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 250.63843899999938,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 189.62583800001198,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 283.6035079999988,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 165.43426100000147,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 264.38535900001625,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 270.50707999998735,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 178.63578300000427,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 189.59640400001376,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 260.10533100000544,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 274.48753100000545,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 168.8040519999845,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        }
+      ]
+    },
+    {
+      "concurrency": 2,
+      "requests": 16,
+      "ok": 0,
+      "error_rate": 1.0,
+      "errors": [
+        "MODEL_UNAVAILABLE"
+      ],
+      "latency_ms": {
+        "p50": null,
+        "p95": null,
+        "mean": null
+      },
+      "ttft_ms": {
+        "p50": null,
+        "p95": null
+      },
+      "throughput_rps": 0.0,
+      "aggregate_tokens_per_s": 0.0,
+      "per_request_decode_tokens_per_s": {
+        "p50": null
+      },
+      "wall_s": 1.3807932279999875,
+      "routes": {},
+      "device": {
+        "samples": 3,
+        "gpu_util_pct": {
+          "mean": 0.3333333333333333,
+          "max": 1
+        },
+        "gpu_power_w": {
+          "mean": 11.665333333333335,
+          "max": 11.692
+        },
+        "gpu_temp_c": {
+          "mean": 45.0,
+          "max": 45
+        },
+        "mem_used_bytes": {
+          "mean": 7895496021.333333,
+          "max": 7910461440
+        }
+      },
+      "raw": [
+        {
+          "ttft_ms": null,
+          "latency_ms": 239.71912699997233,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 261.9359109999948,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 204.83926599999336,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 120.72180300000923,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 198.37583399998948,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 118.81122200000505,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 203.22170000000028,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 137.94474200000195,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 135.7549699999936,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 141.99912899999845,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 127.6745159999848,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 134.1472119999878,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 212.2408529999973,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 142.00959199999375,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 195.91286299998956,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 179.8918750000098,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        }
+      ]
+    },
+    {
+      "concurrency": 4,
+      "requests": 16,
+      "ok": 0,
+      "error_rate": 1.0,
+      "errors": [
+        "MODEL_UNAVAILABLE"
+      ],
+      "latency_ms": {
+        "p50": null,
+        "p95": null,
+        "mean": null
+      },
+      "ttft_ms": {
+        "p50": null,
+        "p95": null
+      },
+      "throughput_rps": 0.0,
+      "aggregate_tokens_per_s": 0.0,
+      "per_request_decode_tokens_per_s": {
+        "p50": null
+      },
+      "wall_s": 0.7322552110000231,
+      "routes": {},
+      "device": {
+        "samples": 2,
+        "gpu_util_pct": {
+          "mean": 0.0,
+          "max": 0
+        },
+        "gpu_power_w": {
+          "mean": 11.722999999999999,
+          "max": 11.761
+        },
+        "gpu_temp_c": {
+          "mean": 45.0,
+          "max": 45
+        },
+        "mem_used_bytes": {
+          "mean": 7945261056.0,
+          "max": 7960682496
+        }
+      },
+      "raw": [
+        {
+          "ttft_ms": null,
+          "latency_ms": 154.01046200000224,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 216.7954180000038,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 229.69683800002372,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 258.50278499999035,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 124.45468100000312,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 116.85094199998503,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 121.9730760000175,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 162.17674399999282,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 194.24284999999486,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 95.72082700000806,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 170.16747900001405,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 167.93178699998634,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 110.86006700000439,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 215.95736300000112,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 170.8561789999976,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 191.7142540000043,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        }
+      ]
+    },
+    {
+      "concurrency": 8,
+      "requests": 16,
+      "ok": 0,
+      "error_rate": 1.0,
+      "errors": [
+        "MODEL_UNAVAILABLE"
+      ],
+      "latency_ms": {
+        "p50": null,
+        "p95": null,
+        "mean": null
+      },
+      "ttft_ms": {
+        "p50": null,
+        "p95": null
+      },
+      "throughput_rps": 0.0,
+      "aggregate_tokens_per_s": 0.0,
+      "per_request_decode_tokens_per_s": {
+        "p50": null
+      },
+      "wall_s": 0.5861633410000024,
+      "routes": {},
+      "device": {
+        "samples": 2,
+        "gpu_util_pct": {
+          "mean": 0.5,
+          "max": 1
+        },
+        "gpu_power_w": {
+          "mean": 11.767499999999998,
+          "max": 11.774
+        },
+        "gpu_temp_c": {
+          "mean": 45.0,
+          "max": 45
+        },
+        "mem_used_bytes": {
+          "mean": 7966773248.0,
+          "max": 7970897920
+        }
+      },
+      "raw": [
+        {
+          "ttft_ms": null,
+          "latency_ms": 242.52305399997454,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 249.40872399997716,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 214.16004799999655,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 187.52476599999568,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 225.34299899999155,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 357.58221800000456,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 272.43468800000414,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 319.1002929999911,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 230.59530500000847,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 241.89334100000792,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 251.8519930000025,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 217.84044699998617,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 228.44264799999792,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 213.3600349999938,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 264.7408290000044,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        },
+        {
+          "ttft_ms": null,
+          "latency_ms": 208.3888060000163,
+          "status": "MODEL_UNAVAILABLE",
+          "route": null,
+          "completion_tokens": null,
+          "prompt_tokens": null
+        }
+      ]
+    }
+  ],
+  "gateway_startup": {
+    "ready_after_s": 0.023093461990356445,
+    "measured_at": 1790384453.6728482,
+    "model_warmup_ms": 9.3
+  },
+  "max_reliable_concurrency_tested": null
+}

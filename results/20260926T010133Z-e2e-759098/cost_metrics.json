@@ -1,0 +1,11 @@
+{
+  "run_id": "20260926T010133Z-e2e-759098",
+  "label": "Measured",
+  "requests": 0,
+  "prompt_tokens": 0,
+  "completion_tokens": 0,
+  "actual_cost_usd": 0,
+  "counterfactual_usd": 0,
+  "tokens_avoided_by_cache": 0,
+  "avoided_usd": 0
+}
