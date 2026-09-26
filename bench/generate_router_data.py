@@ -107,7 +107,8 @@ def grade(item: dict, text: str) -> bool:
 async def run(args) -> None:
     s = get_settings()
     model = s.local_model_name if args.tier == "local" else s.local_large_model_name
-    adapter = LocalModelAdapter(s.local_model_base_url, model, s.local_model_api_key, s.local_model_family,
+    base = s.local_model_base_url if args.tier == "local" else s.local_large_model_base_url
+    adapter = LocalModelAdapter(base, model, s.local_model_api_key, s.local_model_family,
                                 tier=args.tier, timeout_s=300, max_concurrency=args.concurrency)
     kev = KEVSource()
     kev.load()
@@ -118,9 +119,14 @@ async def run(args) -> None:
     if out.exists():
         for l in out.read_text().split("\n"):
             try:
-                done.add(json.loads(l)["id"])
-            except (ValueError, KeyError):
-                pass  # tolerate a line truncated by an interrupted run
+                row = json.loads(l)
+            except ValueError:
+                continue  # tolerate a line truncated by an interrupted run
+            if row.get("model") != model:
+                # resuming would mix two models' answers (and logprob features) in one training set
+                raise SystemExit(f"{out} holds rows from model '{row.get('model')}', not '{model}': "
+                                 f"move it to {OUT / 'archive'} and rerun")
+            done.add(row["id"])
     todo = [it for it in items if it["id"] not in done]
     print(f"tier={args.tier} model={model} items={len(items)} todo={len(todo)}", flush=True)
     lock = asyncio.Lock()

@@ -21,7 +21,7 @@ it into a tamper-evident receipt that a CISO, CFO or auditor can verify.
 ## What runs where (all on the ZGX Nano)
 | Component | Implementation |
 |---|---|
-| Local inference | Ollama 0.34 (CUDA 13 backend) on the NVIDIA GB10 — `qwen2.5:3b-instruct` (default tier), `qwen2.5:14b-instruct` (escalation tier) |
+| Local inference | vLLM (CUDA 13) on the NVIDIA GB10, one server per tier — `Qwen/Qwen2.5-3B-Instruct` on :8000 (default tier), `Qwen/Qwen2.5-14B-Instruct` on :8001 (escalation tier), BF16 |
 | Gateway | FastAPI (`backend/nanogate`), SQLite, JSON logs, Prometheus `/metrics`, SSE `/api/events` |
 | Verified cache | `BAAI/bge-small-en-v1.5` retrieval + `cross-encoder/nli-deberta-v3-base` NLI verifier + slot checks, tenant-safe namespaces |
 | Router | Logistic regression + isotonic calibration over request/retrieval/generation/system features (trained on graded local answers) |
@@ -32,12 +32,12 @@ it into a tamper-evident receipt that a CISO, CFO or auditor can verify.
 
 ## Quick start
 ```bash
-make setup        # user-space: venv, Node, Ollama, models, UI deps, API keys (no root)
+make setup        # user-space: venv, Node, vLLM, model weights, UI deps, API keys (no root)
 make seed-data    # public datasets with provenance + synthetic security data
 make doctor       # hardware, CUDA, model, artifacts, ports, telemetry
 make router-data  # real local inference over public data (GPU)
 make train-router # grouped split, isotonic calibration, validation threshold
-make start        # Ollama + gateway on http://127.0.0.1:8080 (API + dashboard)
+make start        # vLLM servers + gateway on http://127.0.0.1:8080 (API + dashboard)
 make demo         # validate → start → wait ready → six real demo beats
 ```
 Admin key for the dashboard: `var/dev_keys.json` → `keys.admin.key` (mode 0600, never printed by any command).
@@ -63,10 +63,15 @@ laptop's Tailscale IP (find it with `tailscale status`), then open `http://<zgx-
 Other peers are refused and logged; every request still needs an API key. (VS Code port forwarding also works when the tunnel is healthy.)
 
 ## ZGX / model setup notes
-- GB10 is compute capability 12.1; Ollama's `cuda_v13` backend is used automatically (`scripts/runtime.sh`).
+- GB10 is compute capability 12.1; vLLM runs from its own venv (`.runtime/vllm`, CUDA 13 wheels) so its torch pin never
+  conflicts with the gateway's. `scripts/runtime.sh start|stop|restart|status [local|large]` manages both servers;
+  memory shares, ports and context length are `VLLM_*` settings in `.env.example`. First start compiles kernels (minutes).
+- After changing the runtime or model weights, rerun `make router-data && make train-router`: the router's logprob
+  features come from the serving stack, so a router trained on another runtime's outputs is not calibrated for this one.
 - `nvidia-smi` reports GPU memory as *Not Supported* on the unified-memory GB10; NanoGate reads unified memory from
   `/proc/meminfo` and says so in the UI.
-- Any OpenAI-compatible local endpoint works: set `LOCAL_MODEL_BASE_URL`, `LOCAL_MODEL_NAME`, `LOCAL_MODEL_FAMILY` (`.env.example`).
+- Any OpenAI-compatible local endpoint works: set `LOCAL_MODEL_BASE_URL` / `LOCAL_LARGE_MODEL_BASE_URL`, `LOCAL_MODEL_NAME`,
+  `LOCAL_MODEL_FAMILY` (`.env.example`).
 
 ## Datasets
 MMLU, GSM8K, PAWS and the live CISA KEV catalog (with retrieval date, version, SHA-256), an authored enterprise cache set,

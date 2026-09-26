@@ -41,12 +41,14 @@ class Settings:
     db_path: Path | None = None
     receipt_hmac_key_file: Path | None = None
 
-    local_model_base_url: str = field(default_factory=lambda: _env("LOCAL_MODEL_BASE_URL", "http://127.0.0.1:11434/v1"))
-    local_model_name: str = field(default_factory=lambda: _env("LOCAL_MODEL_NAME", "qwen2.5:3b-instruct"))
-    local_model_api_key: str = field(default_factory=lambda: _env("LOCAL_MODEL_API_KEY", "ollama"))
+    local_model_base_url: str = field(default_factory=lambda: _env("LOCAL_MODEL_BASE_URL", "http://127.0.0.1:8000/v1"))
+    local_model_name: str = field(default_factory=lambda: _env("LOCAL_MODEL_NAME", "Qwen/Qwen2.5-3B-Instruct"))
+    local_model_api_key: str = field(default_factory=lambda: _env("LOCAL_MODEL_API_KEY", ""))
     local_model_family: str = field(default_factory=lambda: _env("LOCAL_MODEL_FAMILY", "qwen2.5"))
     local_model_revision: str = field(default_factory=lambda: _env("LOCAL_MODEL_REVISION", "auto"))
-    local_large_model_name: str | None = field(default_factory=lambda: _env("LOCAL_LARGE_MODEL_NAME", "qwen2.5:14b-instruct"))
+    # vLLM serves one model per process: the escalation tier has its own server
+    local_large_model_base_url: str = field(default_factory=lambda: _env("LOCAL_LARGE_MODEL_BASE_URL", "http://127.0.0.1:8001/v1"))
+    local_large_model_name: str | None = field(default_factory=lambda: _env("LOCAL_LARGE_MODEL_NAME", "Qwen/Qwen2.5-14B-Instruct"))
     local_timeout_s: float = field(default_factory=lambda: float(_env("LOCAL_MODEL_TIMEOUT_S", "120")))
     max_concurrent_inference: int = field(default_factory=lambda: int(_env("MAX_CONCURRENT_INFERENCE", "4")))
     max_queue_depth: int = field(default_factory=lambda: int(_env("MAX_QUEUE_DEPTH", "32")))

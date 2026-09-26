@@ -3,7 +3,7 @@
 Concurrency levels (default 1,2,4,8). Each request is a distinct public-data question (MMLU),
 so the verified cache cannot serve it. Streaming is used so TTFT is measured client-side.
 NVML is sampled during every level (GPU util, power, temperature) and unified memory from
-/proc/meminfo. Cold start = first request after asking Ollama to unload the model.
+/proc/meminfo. Cold start = restart of the local vLLM server (server_start_ms) + first request.
 
 Usage: python bench/load_test.py [--levels 1,2,4,8] [--per-level 16] [--max-tokens 128]
 """
@@ -13,6 +13,7 @@ import argparse
 import asyncio
 import json
 import random
+import subprocess
 import threading
 import time
 
@@ -123,16 +124,20 @@ async def level(key: str, conc: int, ps: list[str], max_tokens: int) -> dict:
 
 
 async def cold_warm(key: str, model: str, max_tokens: int) -> dict:
-    async with httpx.AsyncClient(timeout=600) as c:
-        try:
-            await c.post("http://127.0.0.1:11434/api/generate", json={"model": model, "keep_alive": 0})
-            await asyncio.sleep(3)
-        except Exception as e:
-            return {"available": False, "reason": f"cannot unload model: {e}"}
+    # vLLM cannot unload a model on request: cold start = restart the local-tier server, then the first request
+    t0 = time.perf_counter()
+    rs = subprocess.run([str(ROOT / "scripts/runtime.sh"), "restart", "local"], capture_output=True, text=True)
+    if rs.returncode != 0:
+        return {"available": False, "reason": f"cannot restart vLLM: {(rs.stderr or rs.stdout).strip()[-200:]}"}
+    server_start_ms = (time.perf_counter() - t0) * 1000
     async with httpx.AsyncClient(base_url=GW, timeout=600) as c:
+        for _ in range(120):   # wait for the gateway's health loop to see the model again
+            if (await c.get("/healthz")).json()["components"]["model"]["ok"]:
+                break
+            await asyncio.sleep(1)
         cold = await one(c, key, "In one sentence, what is DNS? (cold)", max_tokens)
         warm = await one(c, key, "In one sentence, what is DHCP? (warm)", max_tokens)
-    return {"available": True, "cold": cold, "warm": warm}
+    return {"available": True, "server_start_ms": server_start_ms, "cold": cold, "warm": warm}
 
 
 def main():

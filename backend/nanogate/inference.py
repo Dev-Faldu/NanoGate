@@ -1,4 +1,4 @@
-"""Local model adapters (OpenAI-compatible endpoints: Ollama, vLLM, organizer servers).
+"""Local model adapters (OpenAI-compatible endpoints: vLLM on the ZGX Nano, organizer servers).
 
 Generation always streams internally so time-to-first-token, real token counts and
 per-token logprobs are measured on every request. There is no synthetic fallback: if the
@@ -9,11 +9,16 @@ from __future__ import annotations
 import asyncio
 import json
 import math
+import os
 import time
+from datetime import datetime, timezone
+from pathlib import Path
 from dataclasses import dataclass, field
 from typing import Any, AsyncIterator
 
 import httpx
+
+from .settings import ROOT
 
 
 class ModelUnavailable(Exception):
@@ -73,6 +78,50 @@ def logprob_stats(res: GenerationResult) -> dict[str, float | None]:
     }
 
 
+def parse_prometheus(text: str, model: str) -> dict[str, float]:
+    """Unlabelled values of Prometheus text-format samples, restricted to `model` when a model_name label exists."""
+    out: dict[str, float] = {}
+    for line in text.splitlines():
+        if not line or line.startswith("#"):
+            continue
+        name_labels, _, value = line.rpartition(" ")
+        name, _, labels = name_labels.partition("{")
+        if 'model_name="' in labels and f'model_name="{model}"' not in labels:
+            continue
+        try:
+            out[name] = float(value)
+        except ValueError:
+            continue
+    return out
+
+
+def hf_snapshot_info(repo: str) -> dict[str, Any]:
+    """Identity of the weights vLLM loaded, read from the shared HF cache (HF_HOME): commit sha, dtype,
+    quantization method, parameter count (from the safetensors index) and size on disk."""
+    repo_dir = Path(os.environ.get("HF_HOME", ROOT / ".runtime" / "hf")) / "hub" / \
+        ("models--" + repo.replace("/", "--"))
+    ref = repo_dir / "refs" / "main"
+    if not ref.exists():
+        return {}
+    sha = ref.read_text().strip()
+    snap = repo_dir / "snapshots" / sha
+    info: dict[str, Any] = {"digest": sha, "modified_at": datetime.fromtimestamp(ref.stat().st_mtime, timezone.utc).isoformat()}
+    try:
+        cfg = json.loads((snap / "config.json").read_text())
+        dtype = cfg.get("torch_dtype") or cfg.get("dtype")
+        info["format"] = "safetensors"
+        info["quantization"] = (cfg.get("quantization_config") or {}).get("quant_method") or dtype
+        idx = snap / "model.safetensors.index.json"
+        total = json.loads(idx.read_text()).get("metadata", {}).get("total_size") if idx.exists() else None
+        width = {"bfloat16": 2, "float16": 2, "float32": 4}.get(dtype or "")
+        if total and width and not cfg.get("quantization_config"):
+            info["parameter_size"] = f"{total / width / 1e9:.1f}B"
+        info["size_bytes"] = sum(f.resolve().stat().st_size for f in snap.iterdir() if f.is_file())
+    except Exception as e:
+        info["identity_error"] = f"{type(e).__name__}: {e}"[:200]
+    return info
+
+
 class LocalModelAdapter:
     def __init__(self, base_url: str, model: str, api_key: str = "", family: str = "", revision: str = "auto",
                  tier: str = "local", timeout_s: float = 120.0, max_concurrency: int = 4):
@@ -117,31 +166,23 @@ class LocalModelAdapter:
         return self.status
 
     async def identify(self) -> dict[str, Any]:
-        """Retrieve model identity (digest, quantization, context) from Ollama native API when available."""
+        """Model identity from the vLLM server (/v1/models, /version) and the shared Hugging Face cache
+        (commit sha, dtype, quantization, size). Nothing is inferred when a source is unavailable."""
         info: dict[str, Any] = {"name": self.model, "family": self.family, "runtime": "openai-compatible",
                                 "tier": self.tier, "endpoint": self.base_url}
         try:
-            r = await self._client.post(f"{self.native_root}/api/show", json={"model": self.model}, timeout=5.0)
+            r = await self._client.get(f"{self.base_url}/models", headers=self._headers(), timeout=5.0)
             if r.status_code == 200:
-                d = r.json()
-                det = d.get("details", {})
-                mi = d.get("model_info", {})
-                ctx = next((v for k, v in mi.items() if k.endswith(".context_length")), None)
-                info.update(runtime="ollama", family=det.get("family") or self.family,
-                            parameter_size=det.get("parameter_size"), quantization=det.get("quantization_level"),
-                            format=det.get("format"), context_length=ctx, license=(d.get("license") or "")[:80] or None)
-            r2 = await self._client.get(f"{self.native_root}/api/tags", timeout=5.0)
-            if r2.status_code == 200:
-                for m in r2.json().get("models", []):
-                    if m.get("name") == self.model or m.get("model") == self.model:
-                        info["digest"] = m.get("digest")
-                        info["size_bytes"] = m.get("size")
-                        info["modified_at"] = m.get("modified_at")
-            v = await self._client.get(f"{self.native_root}/api/version", timeout=5.0)
+                m = next((m for m in r.json().get("data", []) if m.get("id") == self.model), None)
+                if m:
+                    info.update(runtime="vllm" if m.get("owned_by") == "vllm" else info["runtime"],
+                                context_length=m.get("max_model_len"), source=m.get("root"))
+            v = await self._client.get(f"{self.native_root}/version", timeout=5.0)
             if v.status_code == 200:
                 info["runtime_version"] = v.json().get("version")
         except Exception as e:
             info["identity_error"] = f"{type(e).__name__}: {e}"[:200]
+        info.update(hf_snapshot_info(info.get("source") or self.model))
         if self.revision == "auto" and info.get("digest"):
             self.revision = info["digest"][:12]
         info["revision"] = self.revision
@@ -149,15 +190,15 @@ class LocalModelAdapter:
         return info
 
     async def placement(self) -> dict[str, Any]:
-        """Actual device placement of loaded models (Ollama /api/ps)."""
+        """Serving state of the model from vLLM's Prometheus /metrics (KV-cache use, running/waiting requests)."""
         try:
-            r = await self._client.get(f"{self.native_root}/api/ps", timeout=3.0)
+            r = await self._client.get(f"{self.native_root}/metrics", timeout=3.0)
             r.raise_for_status()
-            for m in r.json().get("models", []):
-                if m.get("name") == self.model:
-                    return {"loaded": True, "size_bytes": m.get("size"), "size_vram_bytes": m.get("size_vram"),
-                            "expires_at": m.get("expires_at"), "context_length": m.get("context_length")}
-            return {"loaded": False}
+            mets = parse_prometheus(r.text, self.model)
+            kv = mets.get("vllm:kv_cache_usage_perc", mets.get("vllm:gpu_cache_usage_perc"))
+            return {"loaded": True, "kv_cache_usage": kv,
+                    "requests_running": mets.get("vllm:num_requests_running"),
+                    "requests_waiting": mets.get("vllm:num_requests_waiting")}
         except Exception as e:
             return {"loaded": None, "reason": f"{type(e).__name__}"}
 
