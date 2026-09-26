@@ -163,7 +163,10 @@ class Assistant:
         cnt = lambda k: dict(sorted({r[k]: sum(1 for x in rows if x[k] == r[k]) for r in rows}.items(), key=lambda kv: -kv[1]))
         lat = sorted(r["latency_ms"] for r in rows if r["status"] == "ok" and r["latency_ms"] is not None)
         return {"window_hours": hours, "requests": len(rows), "by_status": cnt("status"), "by_route": cnt("route"),
-                "top_reasons": dict(list(cnt("reason").items())[:8]),
+                "denied_or_error_reasons": dict(sorted({r["reason"]: sum(1 for x in rows if x["reason"] == r["reason"] and x["status"] != "ok")
+                                                        for r in rows if r["status"] != "ok"}.items(), key=lambda kv: -kv[1])[:6]),
+                "answered_outcomes": dict(sorted({r["reason"]: sum(1 for x in rows if x["reason"] == r["reason"] and x["status"] == "ok")
+                                                  for r in rows if r["status"] == "ok"}.items(), key=lambda kv: -kv[1])[:6]),
                 "latency_p50_ms": lat[len(lat) // 2] if lat else None,
                 "latency_p95_ms": lat[int(len(lat) * 0.95)] if lat else None,
                 "cost_usd": round(sum(r["cost_usd"] or 0 for r in rows), 6),

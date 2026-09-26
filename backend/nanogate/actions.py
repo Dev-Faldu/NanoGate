@@ -271,6 +271,9 @@ class Actions:
                 n = self.svc.cache.revoke_source(source_id)
             else:
                 self.svc.cache.restore_source(source_id)
+                if source_id.startswith("kb_"):   # answers cached while it was revoked were built without it
+                    s = self.svc.kb.source(source_id)
+                    n = self.svc.cache.invalidate_departments(s["tenant_id"], s["departments"], f"knowledge {source_id} restored")
         self.svc.bus.emit("service_state_changed", component=f"source:{source_id}", state="revoked" if revoked else "restored",
                           cache_entries_revoked=n)
         self.audit.record("knowledge.revoke" if revoked else "knowledge.restore", source_id, actor, source,

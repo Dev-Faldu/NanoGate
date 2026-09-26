@@ -172,6 +172,7 @@ def test_knowledge_upload_retrieve_revoke(client, keys, svc):
                      json={"filename": "runbook.md", "content_b64": base64.b64encode(doc.encode()).decode()})
     assert up.status_code == 200, up.text
     assert up.json()["chunks"] >= 1
+    assert "cache_entries_invalidated" in up.json()   # answers cached before the upload are no longer reused
     hit = svc.kb.retrieve("acme", "it", "How do I fix VPN error 809?")
     assert hit and "ACME-GW-EU" in hit["context"] and hit["source_id"] == s["source_id"]
     assert svc.kb.retrieve("acme", "hr", "How do I fix VPN error 809?") is None      # not shared with HR

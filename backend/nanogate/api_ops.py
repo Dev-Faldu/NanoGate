@@ -439,17 +439,23 @@ async def add_document(source_id: str, req: DocReq, request: Request, ident: Ide
         raise HTTPException(422, detail={"code": "INVALID_DOCUMENT", "message": str(e)[:300]})
     if svc.cache is not None:
         svc.cache.set_source_version(source_id, res["version"])
+        s = kb.source(source_id)
+        res["cache_entries_invalidated"] = svc.cache.invalidate_departments(s["tenant_id"], s["departments"],
+                                                                            f"knowledge {source_id} changed")
     svc.ops.audit.record("knowledge.document.add", source_id, ident, filename=req.filename, chunks=res["chunks"],
-                         bytes=len(data))
+                         bytes=len(data), cache_entries_invalidated=res.get("cache_entries_invalidated"))
     return res
 
 
 @router.delete("/knowledge/{source_id}/documents/{doc_id}")
 async def remove_document(source_id: str, doc_id: str, request: Request, ident: Identity = Depends(admin)):
     svc = request.app.state.svc
-    v = _kb(svc).remove_document(source_id, doc_id)
+    kb = _kb(svc)
+    v = kb.remove_document(source_id, doc_id)
     if svc.cache is not None:
         svc.cache.set_source_version(source_id, v)
+        s = kb.source(source_id)
+        svc.cache.invalidate_departments(s["tenant_id"], s["departments"], f"knowledge {source_id} changed")
     svc.ops.audit.record("knowledge.document.remove", source_id, ident, doc_id=doc_id)
     return {"source_id": source_id, "version": v}
 

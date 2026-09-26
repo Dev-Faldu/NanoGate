@@ -93,7 +93,12 @@ export function Markdown({ text, className }: { text: string; className?: string
     if (/^\s*([-*•]|\d+\.)\s+/.test(l)) {
       const ordered = /^\s*\d+\./.test(l);
       const items: string[] = [];
-      while (i < lines.length && /^\s*([-*•]|\d+\.)\s+/.test(lines[i])) items.push(lines[i++].replace(/^\s*([-*•]|\d+\.)\s+/, ""));
+      const isItem = (x: string | undefined) => x !== undefined && /^\s*([-*•]|\d+\.)\s+/.test(x);
+      while (i < lines.length) {
+        if (isItem(lines[i])) items.push(lines[i++].replace(/^\s*([-*•]|\d+\.)\s+/, ""));
+        else if (!lines[i].trim() && isItem(lines.slice(i).find((x) => x.trim()))) i++;   // blank line inside the list
+        else break;
+      }
       const Tag = ordered ? "ol" : "ul";
       blocks.push(<Tag key={blocks.length} className={clsx("my-1.5 space-y-1 pl-5", ordered ? "list-decimal" : "list-disc")}>
         {items.map((it, j) => <li key={j}>{inline(it)}</li>)}</Tag>);

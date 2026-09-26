@@ -285,6 +285,18 @@ class SemanticCache:
         self._invalidate_index()
         return n
 
+    def invalidate_departments(self, tenant_id: str, departments: list[str], reason: str) -> int:
+        """Answers cached before a department's knowledge changed were built without it: never reuse them."""
+        if not departments:
+            return 0
+        marks = ",".join("?" * len(departments))
+        with self.db.tx() as c:
+            n = c.execute(f"UPDATE cache_entries SET validation_state='invalidated', invalidated_reason=? WHERE tenant_id=? "
+                          f"AND department_id IN ({marks}) AND validation_state='valid'",
+                          (reason, tenant_id, *departments)).rowcount
+        self._invalidate_index()
+        return n
+
     def revoke_source(self, source_id: str) -> int:
         self.revoked_sources.add(source_id)
         with self.db.tx() as c:
