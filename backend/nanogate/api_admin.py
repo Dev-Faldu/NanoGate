@@ -71,6 +71,8 @@ def admin(request: Request, authorization: str | None = Header(None), token: str
     if ident is None:
         raise HTTPException(401, detail={"code": Reason.AUTH_INVALID.value, "message": "dashboard session required"})
     if "admin" not in ident.scopes:
+        if "audit" in ident.scopes and request.method == "GET":
+            return ident   # auditors: read-only
         raise HTTPException(403, detail={"code": Reason.SCOPE_DENIED.value, "message": "admin scope required"})
     return ident
 
@@ -86,8 +88,8 @@ async def create_session(req: SessionReq, request: Request):
         ident = svc.keys.resolve(req.api_key, svc.policies.policy_for)
     except AuthError as e:
         raise HTTPException(e.status, detail={"code": e.reason.value, "message": e.message})
-    if "admin" not in ident.scopes:
-        raise HTTPException(403, detail={"code": Reason.SCOPE_DENIED.value, "message": "admin scope required"})
+    if not ({"admin", "audit"} & set(ident.scopes)):
+        raise HTTPException(403, detail={"code": Reason.SCOPE_DENIED.value, "message": "admin or auditor key required"})
     return {"token": issue_session(svc, ident), "identity": ident.public(), "expires_in": 12 * 3600}
 
 

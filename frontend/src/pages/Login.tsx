@@ -14,7 +14,7 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
         <div className="panel p-8">
           <h1 className="text-[26px] font-semibold tracking-[-0.02em] text-ink">Sign in to the console</h1>
           <p className="mt-2 text-[14px] text-ink-2">
-            Use an admin API key. It is exchanged for a 12-hour session token; the key itself is never stored in the browser.
+            Use an admin or auditor API key. It is exchanged for a 12-hour session token; the key itself is never stored in the browser.
           </p>
           <form className="mt-6 space-y-3" onSubmit={async (e) => {
             e.preventDefault();
@@ -30,7 +30,7 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
               setBusy(false);
             }
           }}>
-            <label className="block text-[12.5px] font-medium text-ink-2" htmlFor="apikey">Admin API key</label>
+            <label className="block text-[12.5px] font-medium text-ink-2" htmlFor="apikey">Admin or auditor API key</label>
             <div className="relative">
               <KeyRound className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-3" />
               <input id="apikey" type="password" autoComplete="off" className="input !pl-9 font-mono" placeholder="ng_live_…"
@@ -42,6 +42,7 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
             </button>
           </form>
           <p className="mt-5 text-[12px] text-ink-3">
+            Auditor keys open a read-only view. Employees use the <a className="underline decoration-ink/20 underline-offset-2 hover:text-ink" href="/chat">chat app</a>.
             Keys are provisioned by <span className="mono">make setup</span> into <span className="mono">var/dev_keys.json</span> (mode 0600).
           </p>
         </div>

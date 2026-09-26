@@ -79,12 +79,19 @@ class Services:
         self.dlp_fast = LayeredDLP(use_presidio=False)   # streaming hold-back scanner (regex + secrets)
         self.kev = KEVSource(s.kev_file)
         self.cache: SemanticCache | None = None
+        self.kb = None               # company knowledge (needs the embedding model)
         self.ml_error: str | None = None
         self.commit = git_commit()
         self.policies.on_publish.append(self._on_policy_publish)
         self._tasks: list[asyncio.Task] = []
         self.last_sample: dict[str, Any] = {}
         self.offline_report: dict | None = None
+        from .actions import Actions
+        from .assistant import Assistant
+        from .ops import Operations
+        self.ops = Operations(self)   # audit log, settings, alerts, retention, backups, SIEM
+        self.actions = Actions(self)
+        self.assistant = Assistant(self)
 
     # ---- lifecycle ----------------------------------------------------------------------------
     async def start(self) -> None:
@@ -105,6 +112,7 @@ class Services:
                 pass
         self._tasks.append(asyncio.create_task(self._telemetry_loop()))
         self._tasks.append(asyncio.create_task(self._health_loop()))
+        self._tasks += [asyncio.create_task(t) for t in self.ops.tasks()]
 
     def _load_ml(self) -> None:
         from .embeddings import embed, embedder, nli_verifier
@@ -116,6 +124,12 @@ class Services:
                                    hf_revision(self.settings.verifier_model))
         if self.kev.state:
             self.cache.set_source_version(self.kev.source_id, self.kev.state.version)
+        from .company_kb import CompanyKnowledge
+        self.kb = CompanyKnowledge(self.db, embed)
+        for s in self.db.all("SELECT source_id, version, revoked FROM knowledge_sources"):
+            self.cache.set_source_version(s["source_id"], s["version"])
+            if s["revoked"]:
+                self.cache.revoked_sources.add(s["source_id"])
         for r in self.db.all("SELECT source_id FROM source_state WHERE revoked=1"):
             self.cache.revoked_sources.add(r["source_id"])
 
@@ -123,6 +137,7 @@ class Services:
         for t in self._tasks:
             t.cancel()
         await self.local.aclose()
+        await self.ops.aclose()
         if self.local_large:
             await self.local_large.aclose()
 
@@ -208,6 +223,8 @@ class Services:
             "knowledge_kev": {"ok": self.kev.state is not None, "reason": self.kev.error,
                               "version": self.kev.state.version if self.kev.state else None},
             "remote": {"ok": True, **self.remote.health_state},
+            "knowledge": {"ok": self.kb is not None, "reason": None if self.kb else (self.ml_error or "embedding model not loaded"),
+                          "sources": self.db.one("SELECT COUNT(*) n FROM knowledge_sources WHERE revoked=0")["n"]},
         }
 
     def ready(self) -> tuple[bool, list[str]]:

@@ -62,38 +62,44 @@ class ReceiptStore:
         if not r:
             return None
         return {"receipt_id": r["receipt_id"], "request_id": r["request_id"], "seq": r["seq"], "ts": r["ts"],
-                "reason": r["reason"], "body": json.loads(r["body_json"]), "hash": r["hash"], "prev_hash": r["prev_hash"],
-                "hmac": r["hmac"]}
+                "reason": r["reason"], "body": json.loads(r["body_json"]) if r["body_json"] else {}, "hash": r["hash"],
+                "prev_hash": r["prev_hash"], "hmac": r["hmac"], "pruned_at": r.get("pruned_at"),
+                "pruned_reason": r.get("pruned_reason")}
 
     def verify(self, receipt_id: str) -> dict:
         r = self.db.one("SELECT * FROM receipts WHERE receipt_id=?", (receipt_id,))
         if not r:
             return {"receipt_id": receipt_id, "valid": False, "checks": {"exists": False}}
-        recomputed = hashlib.sha256((r["prev_hash"] + r["body_json"]).encode()).hexdigest()
+        pruned = bool(r.get("pruned_at"))
+        recomputed = None if pruned else hashlib.sha256((r["prev_hash"] + r["body_json"]).encode()).hexdigest()
         mac = hmac.new(self.key, r["hash"].encode(), hashlib.sha256).hexdigest()
         prev_row = self.db.one("SELECT hash FROM receipts WHERE seq<? ORDER BY seq DESC LIMIT 1", (r["seq"],))
         expected_prev = prev_row["hash"] if prev_row else GENESIS
         nxt = self.db.one("SELECT prev_hash FROM receipts WHERE seq>? ORDER BY seq ASC LIMIT 1", (r["seq"],))
-        body_prev = json.loads(r["body_json"]).get("integrity", {}).get("previous_receipt_hash")
+        body_prev = r["prev_hash"] if pruned else json.loads(r["body_json"]).get("integrity", {}).get("previous_receipt_hash")
         checks = {
             "exists": True,
-            "body_hash_matches": recomputed == r["hash"],
+            # a body erased by retention/erasure cannot be re-hashed; its sealed hash, HMAC and links still prove order
+            "body_hash_matches": True if pruned else recomputed == r["hash"],
             "hmac_valid": hmac.compare_digest(mac, r["hmac"]),
             "chain_link_valid": r["prev_hash"] == expected_prev and body_prev == r["prev_hash"],
             "successor_link_valid": (nxt is None) or (nxt["prev_hash"] == r["hash"]),
         }
+        if pruned:
+            checks["body_pruned"] = True
         return {"receipt_id": receipt_id, "valid": all(checks.values()), "checks": checks, "hash": r["hash"],
                 "recomputed_hash": recomputed, "prev_hash": r["prev_hash"], "verified_at": time.time()}
 
     def verify_chain(self, limit: int | None = None) -> dict:
-        rows = self.db.all("SELECT seq, receipt_id, body_json, prev_hash, hash, hmac FROM receipts ORDER BY seq"
+        rows = self.db.all("SELECT seq, receipt_id, body_json, prev_hash, hash, hmac, pruned_at FROM receipts ORDER BY seq"
                            + (f" LIMIT {int(limit)}" if limit else ""))
         prev = GENESIS
         bad = []
         for r in rows:
-            h = hashlib.sha256((r["prev_hash"] + r["body_json"]).encode()).hexdigest()
+            h = r["hash"] if r["pruned_at"] else hashlib.sha256((r["prev_hash"] + r["body_json"]).encode()).hexdigest()
             mac = hmac.new(self.key, r["hash"].encode(), hashlib.sha256).hexdigest()
             if r["prev_hash"] != prev or h != r["hash"] or not hmac.compare_digest(mac, r["hmac"]):
                 bad.append(r["receipt_id"])
             prev = r["hash"]
-        return {"receipts": len(rows), "valid": not bad, "invalid_receipts": bad[:50], "head": prev}
+        return {"receipts": len(rows), "valid": not bad, "invalid_receipts": bad[:50], "head": prev,
+                "pruned": sum(1 for r in rows if r["pruned_at"])}

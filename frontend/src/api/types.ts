@@ -80,6 +80,8 @@ export interface Receipt {
   prev_hash: string;
   hmac: string;
   body: ReceiptBody;
+  pruned_at?: number | null;
+  pruned_reason?: string | null;
 }
 
 export interface ReceiptBody {

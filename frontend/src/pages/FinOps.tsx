@@ -1,20 +1,21 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
-import { AlertTriangle, Calculator, Receipt as ReceiptIcon, Wallet } from "lucide-react";
-import { get } from "../api/client";
+import { AlertTriangle, Calculator, Download, Receipt as ReceiptIcon, Wallet } from "lucide-react";
+import { download, get } from "../api/client";
+import { Bar as UseBar, errText } from "../components/kit";
 import { AXIS, ChartFrame, ChartTooltip, GRID, Legend, SERIES } from "../components/charts";
 import { Card, CardHeader, Explainer, KV, PageHeader, ProvenanceTag, Stat, StateView, Tabs } from "../components/ui";
 import { fmtInt, fmtNum, fmtPct, fmtUsd, ROUTE_COLORS, ROUTE_LABEL } from "../lib/format";
 
 export default function FinOps() {
-  const [tab, setTab] = useState<"measured" | "scenario">("measured");
+  const [tab, setTab] = useState<"measured" | "chargeback" | "scenario">("measured");
   return (
     <>
       <PageHeader eyebrow="Finance" title="FinOps"
         subtitle="Measured spend comes from metered tokens and published rates. Projections live on a separate tab and are always labelled as scenario assumptions."
-        right={<Tabs value={tab} onChange={setTab} items={[{ id: "measured", label: "Measured" }, { id: "scenario", label: "Scenario" }]} />} />
-      {tab === "measured" ? <Measured /> : <Scenario />}
+        right={<Tabs value={tab} onChange={setTab} items={[{ id: "measured", label: "Measured" }, { id: "chargeback", label: "By department" }, { id: "scenario", label: "Scenario" }]} />} />
+      {tab === "measured" ? <Measured /> : tab === "chargeback" ? <Chargeback /> : <Scenario />}
     </>
   );
 }
@@ -177,5 +178,66 @@ function Scenario() {
         </Card>
       </div>
     </div>
+  );
+}
+
+function Chargeback() {
+  const months = Array.from({ length: 12 }, (_, i) => {
+    const d = new Date();
+    d.setUTCDate(1);
+    d.setUTCMonth(d.getUTCMonth() - i);
+    return d.toISOString().slice(0, 7);
+  });
+  const [month, setMonth] = useState(months[0]);
+  const [err, setErr] = useState<string | null>(null);
+  const q = useQuery({ queryKey: ["chargeback", month], queryFn: () => get<any>(`/api/finops/chargeback?month=${month}`) });
+  const d = q.data;
+  return (
+    <Card>
+      <CardHeader icon={<ReceiptIcon className="h-4 w-4" />} eyebrow="Chargeback" title="Cost per department"
+        subtitle="What each department used this month, measured from its own requests: ready to bill back or report."
+        right={<>
+          <select className="input !w-auto" value={month} onChange={(e) => setMonth(e.target.value)} aria-label="Month">
+            {months.map((m) => <option key={m} value={m}>{new Date(m + "-01T00:00:00Z").toLocaleDateString(undefined, { month: "long", year: "numeric", timeZone: "UTC" })}</option>)}
+          </select>
+          <button className="btn-ghost" onClick={() => download(`/api/finops/chargeback.csv?month=${month}`, `nanogate-chargeback-${month}.csv`).catch((e) => setErr(errText(e)))}>
+            <Download className="h-4 w-4" />CSV</button>
+        </>} />
+      {q.isLoading ? <StateView kind="loading" /> : q.isError ? <StateView kind="error" detail={errText(q.error)} /> : !d.rows.length ? (
+        <StateView kind="empty" title="No requests in this month" />
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[900px]">
+            <thead className="border-b border-hair"><tr>
+              {["Department", "Requests", "On-device", "Tokens", "Cost", "Hosted equivalent", "Avoided", "Budget used"].map((h) => <th key={h} className="table-head">{h}</th>)}
+            </tr></thead>
+            <tbody>
+              {d.rows.map((r: any) => (
+                <tr key={r.tenant_id + r.department_id} className="border-b border-hair hover:bg-white/60">
+                  <td className="table-cell"><div className="font-medium">{r.display_name}</div><div className="mono text-ink-3">{r.tenant_id}/{r.department_id}</div></td>
+                  <td className="table-cell num">{fmtInt(r.requests)}<span className="text-ink-3"> ({fmtInt(r.denied)} denied)</span></td>
+                  <td className="table-cell num">{fmtPct(r.on_device_share)}</td>
+                  <td className="table-cell num">{fmtInt(r.tokens)}</td>
+                  <td className="table-cell num font-medium">{fmtUsd(r.cost_usd)}</td>
+                  <td className="table-cell num text-ink-2">{fmtUsd(r.counterfactual_usd)}</td>
+                  <td className="table-cell num text-mint">{fmtUsd(r.avoided_usd)}</td>
+                  <td className="table-cell w-[180px]">
+                    {r.budget_usd ? <div className="space-y-1"><div className="num text-[12px] text-ink-2">{fmtPct(r.budget_used)} of {fmtUsd(r.budget_usd, 0)}</div>
+                      <UseBar value={r.budget_used} tone={r.budget_used >= 1 ? "bad" : r.budget_used >= 0.8 ? "warn" : "ink"} /></div> : "—"}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot><tr className="border-t border-line font-semibold">
+              <td className="table-cell">Total</td><td className="table-cell num">{fmtInt(d.totals.requests)}</td><td className="table-cell" />
+              <td className="table-cell num">{fmtInt(d.totals.tokens)}</td><td className="table-cell num">{fmtUsd(d.totals.cost_usd)}</td>
+              <td className="table-cell num">{fmtUsd(d.totals.counterfactual_usd)}</td><td className="table-cell num text-mint">{fmtUsd(d.totals.avoided_usd)}</td><td className="table-cell" />
+            </tr></tfoot>
+          </table>
+        </div>
+      )}
+      <div className="flex items-center gap-2 px-6 pb-5 pt-3 text-[12px] text-ink-3"><ProvenanceTag kind="Measured" />{d?.basis}</div>
+      {err && <p role="alert" className="px-6 pb-4 text-[13px] text-danger">{err}</p>}
+    </Card>
   );
 }

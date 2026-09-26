@@ -136,7 +136,8 @@ class PolicyEngine:
                 c.execute("INSERT OR IGNORE INTO tenants(tenant_id, display_name, created_at) VALUES (?,?,?)",
                           (tid, t["display_name"], now))
                 for did, d in t["departments"].items():
-                    c.execute("INSERT OR REPLACE INTO departments(tenant_id, department_id, display_name, policy_id)"
+                    # first start seeds from YAML; afterwards the database (Access page) is authoritative
+                    c.execute("INSERT OR IGNORE INTO departments(tenant_id, department_id, display_name, policy_id)"
                               " VALUES (?,?,?,?)", (tid, did, d["display_name"], d["policy"]))
             for pid, body in doc["policies"].items():
                 exists = c.execute("SELECT 1 FROM policies WHERE policy_id=?", (pid,)).fetchone()
@@ -145,6 +146,12 @@ class PolicyEngine:
                     c.execute("INSERT INTO policies(policy_id, version, version_tag, status, body_json, body_sha256,"
                               " published_at, published_by) VALUES (?,?,?,?,?,?,?,?)",
                               (pid, 1, p.version_tag, "published", json.dumps(p.body()), p.body_sha256(), now, "seed:yaml"))
+        # tenants/departments created at runtime (Access page) live in the database; YAML ones are re-seeded above
+        for t in self.db.all("SELECT tenant_id, display_name FROM tenants"):
+            self.tenants.setdefault(t["tenant_id"], {"display_name": t["display_name"], "departments": {}})
+        for d in self.db.all("SELECT tenant_id, department_id, display_name, policy_id FROM departments"):
+            self.tenants[d["tenant_id"]]["departments"][d["department_id"]] = {"display_name": d["display_name"],
+                                                                               "policy": d["policy_id"]}
         self._reload_current()
 
     def _reload_current(self) -> None:

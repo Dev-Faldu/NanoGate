@@ -12,9 +12,17 @@ import RouterLab from "./pages/RouterLab";
 import CachePage from "./pages/Cache";
 import FinOps from "./pages/FinOps";
 import Infrastructure from "./pages/Infrastructure";
+import Access from "./pages/Access";
+import Alerts from "./pages/Alerts";
+import Assistant from "./pages/Assistant";
+import ChatApp from "./pages/ChatApp";
+import Knowledge from "./pages/Knowledge";
+import Operations from "./pages/Operations";
 
 export default function App() {
   const [authed, setAuthed] = useState(() => !!getToken());
+  // the employee chat app has its own sign-in (person keys) and layout
+  if (location.pathname === "/chat" || location.pathname.startsWith("/chat/")) return <ChatApp />;
   if (!authed) return <Login onLogin={() => setAuthed(true)} />;
   return (
     <EventsProvider>
@@ -29,6 +37,11 @@ export default function App() {
           <Route path="/cache" element={<CachePage />} />
           <Route path="/finops" element={<FinOps />} />
           <Route path="/infrastructure" element={<Infrastructure />} />
+          <Route path="/assistant" element={<Assistant />} />
+          <Route path="/access" element={<Access />} />
+          <Route path="/alerts" element={<Alerts />} />
+          <Route path="/knowledge" element={<Knowledge />} />
+          <Route path="/operations" element={<Operations />} />
           <Route path="*" element={<Navigate to="/overview" replace />} />
         </Routes>
       </Shell>

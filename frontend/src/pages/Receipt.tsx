@@ -36,6 +36,22 @@ export default function ReceiptPage() {
   const b = r.body;
   const v = verify.data;
   const sealed = v ? v.valid : null;
+  if (r.pruned_at) {
+    return (
+      <Card className="mx-auto max-w-[720px]">
+        <CardHeader eyebrow="Decision receipt" title={<span className="mono">{r.receipt_id}</span>}
+          subtitle={`Body erased ${fmtDateTime(r.pruned_at)} (${r.pruned_reason ?? "retention"}). What remains is enough to prove the chain was not altered.`} />
+        <div className="space-y-4 p-6">
+          <KV cols={1} rows={[["Sealed hash", <Hash value={r.hash} n={24} />], ["Previous receipt hash", <Hash value={r.prev_hash} n={24} />],
+            ["Reason code (kept)", r.reason ?? "—"]]} />
+          <button className="btn-primary" onClick={() => verify.mutate()} disabled={verify.isPending}>Verify integrity</button>
+          {v && <p className={v.valid ? "text-[13px] text-mint" : "text-[13px] text-danger"}>
+            {v.valid ? "HMAC and chain links verify: this receipt was sealed by NanoGate and nothing around it was altered or removed."
+              : "INTEGRITY FAILURE: the chain around this receipt does not verify."}</p>}
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <>

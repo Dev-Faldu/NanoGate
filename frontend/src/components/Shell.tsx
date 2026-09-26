@@ -3,22 +3,34 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import clsx from "clsx";
 import {
-  Activity, BadgeDollarSign, Cpu, DatabaseZap, FlaskConical, LayoutDashboard, LogOut, Radio, ScrollText, Search,
-  ShieldCheck, User,
+  Activity, BadgeDollarSign, BellRing, BookOpen, Cpu, DatabaseZap, FlaskConical, LayoutDashboard, LogOut, MessagesSquare, Radio,
+  ScrollText, Search, Settings2, ShieldCheck, Sparkles, User, Users,
 } from "lucide-react";
 import { get, setToken } from "../api/client";
 import { useEvents } from "../api/events";
 import { Badge, ConnectorBadge, StatusDot } from "./ui";
 
-const NAV = [
-  { to: "/overview", label: "Overview", icon: LayoutDashboard },
-  { to: "/requests", label: "Requests", icon: ScrollText },
-  { to: "/policies", label: "Policies", icon: ShieldCheck },
-  { to: "/router-lab", label: "Router Lab", icon: FlaskConical },
-  { to: "/cache", label: "Verified Cache", icon: DatabaseZap },
-  { to: "/finops", label: "FinOps", icon: BadgeDollarSign },
-  { to: "/infrastructure", label: "Infrastructure", icon: Cpu },
+const SECTIONS = [
+  { title: "Monitor", items: [
+    { to: "/overview", label: "Overview", icon: LayoutDashboard },
+    { to: "/assistant", label: "Assistant", icon: Sparkles },
+    { to: "/requests", label: "Requests", icon: ScrollText },
+    { to: "/alerts", label: "Alerts", icon: BellRing },
+  ] },
+  { title: "Govern", items: [
+    { to: "/access", label: "Access", icon: Users },
+    { to: "/policies", label: "Policies", icon: ShieldCheck },
+    { to: "/knowledge", label: "Knowledge", icon: BookOpen },
+    { to: "/cache", label: "Verified Cache", icon: DatabaseZap },
+    { to: "/router-lab", label: "Router Lab", icon: FlaskConical },
+  ] },
+  { title: "Operate", items: [
+    { to: "/finops", label: "FinOps", icon: BadgeDollarSign },
+    { to: "/infrastructure", label: "Infrastructure", icon: Cpu },
+    { to: "/operations", label: "Operations", icon: Settings2 },
+  ] },
 ];
+const NAV = SECTIONS.flatMap((s) => s.items);
 
 export function Logo({ className }: { className?: string }) {
   return (
@@ -42,6 +54,9 @@ export default function Shell({ children, onLogout }: { children: ReactNode; onL
   const [menu, setMenu] = useState(false);
   const status = useQuery({ queryKey: ["status"], queryFn: () => get<any>("/api/status"), refetchInterval: 15_000 });
   const me = useQuery({ queryKey: ["me"], queryFn: () => get<any>("/api/me") });
+  const alerts = useQuery({ queryKey: ["alerts"], queryFn: () => get<any>("/api/alerts?limit=100"), refetchInterval: 30_000 });
+  const openAlerts: number = alerts.data?.open ?? 0;
+  const auditor = me.data && !me.data.scopes.includes("admin");
   const comp = status.data?.components ?? {};
   const modelState = comp.model?.ok ? "ok" : status.isLoading ? "unknown" : "bad";
   const deviceOk = comp.telemetry?.ok;
@@ -50,17 +65,23 @@ export default function Shell({ children, onLogout }: { children: ReactNode; onL
     <div className="flex min-h-screen">
       <aside className="glass-chrome sticky top-0 hidden h-screen w-[248px] shrink-0 flex-col border-r border-white/70 px-4 py-6 lg:flex">
         <Logo className="px-2" />
-        <nav className="mt-10 flex flex-col gap-1" aria-label="Primary">
-          {NAV.map(({ to, label, icon: Icon }) => (
-            <NavLink key={to} to={to}
-              className={({ isActive }) => clsx("group flex items-center gap-3 rounded-xl px-3 py-2 text-[14px] font-medium transition-colors duration-180",
-                isActive ? "bg-ink text-white shadow-soft" : "text-ink-2 hover:translate-x-0.5 hover:bg-white/70 hover:text-ink")}>
-              <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
-              {label}
-            </NavLink>
+        <nav className="-mx-1 mt-8 flex flex-1 flex-col gap-5 overflow-y-auto px-1 pb-4" aria-label="Primary">
+          {SECTIONS.map((sec) => (
+            <div key={sec.title} className="flex flex-col gap-0.5">
+              <div className="eyebrow mb-1 px-3 !text-[10px]">{sec.title}</div>
+              {sec.items.map(({ to, label, icon: Icon }) => (
+                <NavLink key={to} to={to}
+                  className={({ isActive }) => clsx("group flex items-center gap-3 rounded-xl px-3 py-[7px] text-[14px] font-medium transition-all duration-180",
+                    isActive ? "bg-ink text-white shadow-soft" : "text-ink-2 hover:translate-x-0.5 hover:bg-white/70 hover:text-ink")}>
+                  <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
+                  {label}
+                  {to === "/alerts" && openAlerts > 0 && <span className="ml-auto rounded-full bg-danger px-1.5 text-[10.5px] font-semibold leading-[18px] text-white">{openAlerts}</span>}
+                </NavLink>
+              ))}
+            </div>
           ))}
         </nav>
-        <div className="glass-surface mt-auto space-y-3 rounded-2xl p-4">
+        <div className="glass-surface space-y-3 rounded-2xl p-4">
           <div className="eyebrow">Trusted boundary</div>
           <div className="flex items-center gap-2 text-[13px] text-ink">
             <StatusDot state={deviceOk ? "ok" : "unknown"} />
@@ -88,6 +109,10 @@ export default function Shell({ children, onLogout }: { children: ReactNode; onL
               onChange={(e) => setQ(e.target.value)} aria-label="Global search" />
           </form>
           <div className="ml-auto flex shrink-0 items-center gap-2">
+            <NavLink to="/assistant" className="btn-primary hidden !rounded-full !px-3.5 !py-1.5 md:inline-flex" title="Ask NanoGate">
+              <Sparkles className="h-3.5 w-3.5" />Ask
+            </NavLink>
+            {auditor && <Badge tone="lilac">Read-only</Badge>}
             <Badge className="hidden xl:inline-flex" tone={status.data?.app_mode === "demo" ? "warn" : "neutral"} title="APP_MODE">
               {status.data?.app_mode === "demo" ? "Reproducible demo profile" : status.data?.app_mode ?? "…"}
             </Badge>
@@ -109,9 +134,10 @@ export default function Shell({ children, onLogout }: { children: ReactNode; onL
               {menu && (
                 <div className="glass-menu absolute right-0 top-11 w-64 animate-fadein">
                   <div className="eyebrow mb-1">Signed in</div>
-                  <div className="text-sm font-medium text-ink">Admin key {me.data?.key_id ?? "…"}</div>
+                  <div className="text-sm font-medium text-ink">{auditor ? "Auditor" : "Admin"} key {me.data?.key_id ?? "…"}</div>
                   <div className="text-[12px] text-ink-3">{me.data ? `${me.data.tenant_id} / ${me.data.department_id} · ${me.data.scopes.join(", ")}` : ""}</div>
                   <div className="mt-3 flex flex-col gap-1">
+                    <a className="btn-ghost justify-start" href="/chat" target="_blank" rel="noreferrer"><MessagesSquare className="h-4 w-4" />Employee chat app</a>
                     <a className="btn-ghost justify-start" href="/docs" target="_blank" rel="noreferrer">API reference (OpenAPI)</a>
                     <button className="btn-ghost justify-start" onClick={() => { setToken(null); onLogout(); }}>
                       <LogOut className="h-4 w-4" /> Sign out

@@ -11,7 +11,7 @@ VLLM_SPEC ?= vllm
 NODE_VERSION ?= v24.21.0
 
 .PHONY: help doctor setup dev start stop seed-data seed-demo test test-security train-router router-data benchmark \
-        demo clean-demo redact-check offline-test build-ui e2e lint-metrics report
+        demo clean-demo redact-check offline-test build-ui e2e lint-metrics report tls backup restore upgrade install-service
 
 help:
 	@grep -E '^[a-z-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN{FS=":.*?## "}{printf "  \033[1m%-16s\033[0m %s\n",$$1,$$2}'
@@ -114,3 +114,19 @@ e2e: ## Playwright browser tests against the running stack
 
 lint-metrics: ## Static check for fabricated / hardcoded metrics (NO_FAKE_METRICS.md)
 	@$(PY) scripts/check_no_fake_metrics.py
+
+tls: ## Create a self-signed HTTPS certificate (then set NANOGATE_TLS_CERT/KEY in .env and restart)
+	@scripts/make_tls_cert.sh
+
+backup: ## Back up the database, key pepper, receipt signing key and policies to var/backups/
+	@$(PY) scripts/backup.py
+
+restore: ## Restore a backup: make restore FILE=var/backups/<file>.tar.gz
+	@test -n "$(FILE)" || (echo "usage: make restore FILE=var/backups/<file>.tar.gz" && exit 2)
+	@scripts/restore.sh "$(FILE)"
+
+upgrade: ## Backup, pull, rebuild, restart and verify; rolls back automatically on failure
+	@scripts/upgrade.sh
+
+install-service: ## Start NanoGate at boot and restart it on failure (user-level systemd, no root)
+	@scripts/install_service.sh

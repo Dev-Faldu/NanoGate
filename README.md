@@ -13,6 +13,17 @@ REQUEST → AUTHENTICATE → IDENTIFY → CLASSIFY (DLP) → POLICY → BUDGET �
         → RISK ESTIMATION (calibrated router) → ROUTE → OUTPUT SECURITY → COST SETTLEMENT → SEALED RECEIPT → RESPONSE
 ```
 
+## What an organisation gets
+- **Dashboard** for IT, security and finance: live decisions, receipts, policies, cache, router, costs, device health.
+- **Access control**: admin, read-only auditor, app and person keys per department; activity log of every change.
+- **NanoGate Assistant**: ask about traffic, spend, policies or health in plain language; it prepares admin tasks
+  (keys, budgets, alert rules, backups) for you to confirm. Runs on the device's own models.
+- **Employee chat app** at `/chat`: a private assistant that follows each department's rules.
+- **Company knowledge**: upload handbooks and runbooks; answers cite them; per-department access and data class.
+- **Alerts** to Slack, Teams or webhooks; **SIEM** syslog feed; **exports** for audit; **chargeback** per department.
+- **Operations**: HTTPS, scheduled backups + restore, retention, right-to-erasure, start at boot, safe upgrades.
+See the [administrator guide](docs/ADMIN_GUIDE.md).
+
 ## Why it matters
 Enterprise AI trades privacy, quality, cost, latency and auditability against each other, usually implicitly. NanoGate
 makes the trade-off an explicit, per-request, policy-driven decision executed on hardware the enterprise controls, and seals
@@ -90,8 +101,11 @@ and synthetic security evaluation data — see [`datasets/DATA_SOURCES.md`](data
 ## APIs
 | Endpoint | Purpose |
 |---|---|
-| `POST /v1/chat/completions`, `GET /v1/models` | OpenAI-compatible (sync + real token streaming) |
+| `POST /v1/chat/completions`, `POST /v1/embeddings`, `GET /v1/models` | OpenAI-compatible (sync + real token streaming; embeddings on-device) |
 | `GET /healthz`, `GET /readyz`, `GET /metrics` | health (per component), readiness (503 unless essential components work), Prometheus |
+| `/api/org`, `/api/keys`, `/api/audit` | departments, API keys (created once, revocable), activity log |
+| `/api/alerts`, `/api/knowledge`, `/api/ops`, `/api/export/*`, `/api/finops/chargeback` | alerts + channels, company documents, backups / retention / erasure / SIEM / TLS, CSV & receipt exports, per-department cost |
+| `/api/assistant/*`, `/api/chat/*` | NanoGate Assistant (answers from live data, proposes admin tasks you confirm), employee chat app |
 | `/api/*` | dashboard: overview, requests, receipts (+verify, tamper test), policies (+test, publish), router (+threshold preview), cache (+pair test, source revoke), finops (measured / scenario), infrastructure, offline verification, remote mode, SSE events |
 
 ## Benchmarks and measured results
@@ -104,7 +118,7 @@ Threat → control → implementation → test mapping in [`docs/THREAT_MODEL.md
 `make redact-check`, `make lint-metrics` ([`NO_FAKE_METRICS.md`](NO_FAKE_METRICS.md)).
 
 ## Documentation
-[Architecture](docs/ARCHITECTURE.md) · [Threat model](docs/THREAT_MODEL.md) · [AI evaluation](docs/AI_EVALUATION.md) ·
+[Administrator guide](docs/ADMIN_GUIDE.md) · [Architecture](docs/ARCHITECTURE.md) · [Threat model](docs/THREAT_MODEL.md) · [AI evaluation](docs/AI_EVALUATION.md) ·
 [Model card](docs/MODEL_CARD.md) · [Results](RESULTS.md) · [Demo runbook](docs/DEMO_RUNBOOK.md) ·
 [Two-minute video](docs/TWO_MINUTE_VIDEO.md) · [Judge Q&A](docs/JUDGE_QA.md) · [Data sources](datasets/DATA_SOURCES.md) ·
 [Limitations](docs/LIMITATIONS.md) · [Implementation plan](IMPLEMENTATION_PLAN.md)

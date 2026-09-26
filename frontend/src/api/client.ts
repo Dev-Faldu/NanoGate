@@ -52,3 +52,19 @@ export async function api<T>(path: string, init: RequestInit & { json?: unknown 
 
 export const get = <T>(p: string) => api<T>(p);
 export const post = <T>(p: string, json?: unknown) => api<T>(p, { method: "POST", json: json ?? {} });
+export const put = <T>(p: string, json?: unknown) => api<T>(p, { method: "PUT", json: json ?? {} });
+export const del = <T>(p: string) => api<T>(p, { method: "DELETE" });
+
+/** Download an authenticated file (CSV, JSONL, backup) without putting the session token in a URL. */
+export async function download(path: string, fallbackName: string): Promise<void> {
+  const token = getToken();
+  const res = await fetch(path, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+  if (!res.ok) throw new ApiError(res.status, String(res.status), `download failed (HTTP ${res.status})`);
+  const name = /filename="([^"]+)"/.exec(res.headers.get("content-disposition") ?? "")?.[1] ?? fallbackName;
+  const url = URL.createObjectURL(await res.blob());
+  const a = Object.assign(document.createElement("a"), { href: url, download: name });
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}

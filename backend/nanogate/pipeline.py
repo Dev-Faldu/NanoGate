@@ -25,9 +25,10 @@ from .budget import BudgetDenied, Reservation
 from .cache import CacheLookup, conversation_keys, namespace_fields, namespace_id
 from .dlp import SECRET_TYPES, DlpResult, LayeredDLP
 from .inference import GenerationResult, ModelUnavailable
+from .company_kb import kb_messages
 from .knowledge import needs_kev, rag_messages
 from .logging_setup import log as jlog, request_id_var
-from .policy import PolicyDecision
+from .policy import PolicyDecision, class_rank
 from .reason_codes import Reason, primary
 from .remote import ConnectorUnavailable, EgressDenied
 from .services import Services
@@ -148,6 +149,63 @@ class Pipeline:
             self._fail(ctx, ge, body)
             ge.headers = self._headers(ctx)
             raise ge
+
+    async def embed(self, ident: Identity, body: dict) -> tuple[dict, dict]:
+        """OpenAI-compatible embeddings, computed on-device with the cache's embedding model. Same identity, rate-limit,
+        DLP and policy checks as chat (secrets are blocked), and a sealed receipt; the vectors never leave the device."""
+        svc = self.svc
+        ctx = Ctx(svc, identity=ident)
+        request_id_var.set(ctx.request_id)
+        raw = body.get("input")
+        texts = [raw] if isinstance(raw, str) else raw if isinstance(raw, list) and all(isinstance(t, str) for t in raw) else None
+        try:
+            if not texts or len(texts) > 256:
+                raise GatewayError(400, "INVALID_REQUEST", "input must be a string or a list of up to 256 strings")
+            pol = svc.policies.get(ident.policy_id)
+            ctx.stage("identity", "ok", tenant=ident.tenant_id, department=ident.department_id, role=ident.role,
+                      key=ident.key_id, policy=pol.version_tag)
+            if not svc.rate.allow(ident.key_id, pol.rate_limit.rpm):
+                ctx.code(Reason.RATE_LIMITED)
+                raise GatewayError(429, Reason.RATE_LIMITED.value, f"rate limit {pol.rate_limit.rpm}/min exceeded")
+            total = sum(len(t) for t in texts)
+            if total > svc.settings.max_prompt_chars:
+                ctx.code(Reason.INPUT_TOO_LARGE)
+                raise GatewayError(413, Reason.INPUT_TOO_LARGE.value, f"input of {total} chars exceeds {svc.settings.max_prompt_chars}")
+            ctx.intent = "embeddings"
+            ctx.prompt_hash = sha(json.dumps(texts))
+            dres = await asyncio.to_thread(svc.dlp.scan, "\n␞\n".join(texts))
+            ctx.dlp_in = dres
+            ctx.stage("dlp", "ok" if dres.available else "unavailable", data_class=dres.data_class, entities=dres.counts)
+            dec = svc.policies.evaluate(ident.policy_id, dres.data_class, dres.counts, dres.has_secret, dres.has_pii,
+                                        dres.available, svc.remote.mode)
+            ctx.decision = dec
+            for c in dec.reason_codes:
+                ctx.code(c)
+            ctx.stage("policy", "denied" if dec.denied else "ok", policy_version=dec.policy_version, action=dec.action,
+                      data_class=dec.data_class)
+            if dec.denied:
+                raise GatewayError(403, primary(dec.reason_codes) or Reason.POLICY_BLOCK.value,
+                                   f"request blocked by policy {dec.policy_version}: {dec.egress_reason}")
+            if svc.cache is None:
+                raise GatewayError(503, Reason.MODEL_UNAVAILABLE.value, "embedding model not loaded")
+            from .embeddings import embed, embedder
+            t0 = time.perf_counter()
+            vecs = await asyncio.to_thread(embed, texts)
+            tok = embedder().tokenizer
+            n_tok = sum(len(tok(t, truncation=True)["input_ids"]) for t in texts)
+            ctx.route = "local"
+            ctx.stage("inference", "completed", model=svc.settings.embedding_model, inputs=len(texts), prompt_tokens=n_tok,
+                      total_ms=round((time.perf_counter() - t0) * 1000, 1))
+            self._finish(ctx, status="ok", http_status=200, messages=[])
+            svc.db.execute("UPDATE requests SET prompt_tokens=?, model=? WHERE request_id=?",
+                           (n_tok, svc.settings.embedding_model, ctx.request_id))
+            return ({"object": "list", "model": svc.settings.embedding_model,
+                     "data": [{"object": "embedding", "index": i, "embedding": [float(x) for x in v]} for i, v in enumerate(vecs)],
+                     "usage": {"prompt_tokens": n_tok, "total_tokens": n_tok}}, self._headers(ctx))
+        except GatewayError as e:
+            self._fail(ctx, e, {"messages": []})
+            e.headers = self._headers(ctx)
+            raise
 
     async def stream(self, ident: Identity, body: dict) -> tuple[AsyncIterator[bytes], dict]:
         """Real token streaming. Headers carry the pre-generation decision; the final chunk
@@ -325,6 +383,30 @@ class Pipeline:
                 source_id, source_hash = ret["source_id"], ret["source_version"]
                 ctx.stage("retrieval", "ok", source=source_id, version=source_hash, records=[r["cveID"] for r in ret["records"]],
                           top_sim=round(ret["top_sim"], 4), exact_match=ret["exact_match"])
+        elif svc.kb is not None and svc.kb.visible(ident.tenant_id, ident.department_id):
+            # company documents: retrieved on-device; the source's data class is applied to this request
+            ret = await asyncio.to_thread(svc.kb.retrieve, ident.tenant_id, ident.department_id, query)
+            if ret:
+                if class_rank(ret["data_class"]) > class_rank(dec.data_class):
+                    dec2 = svc.policies.evaluate(ident.policy_id, ret["data_class"], dres.counts, dres.has_secret,
+                                                 dres.has_pii, dres.available, svc.remote.mode)
+                    if dec2.denied:
+                        ctx.stage("retrieval", "skipped", source=ret["source_id"],
+                                  reason=f"source is {ret['data_class']}, not permitted by {dec.policy_version}")
+                        ret = None
+                    else:
+                        ctx.decision = dec = dec2
+                        ctx.stage("policy", "ok", policy_version=dec.policy_version, action=dec.action,
+                                  data_class=dec.data_class, allowed_routes=dec.allowed_routes,
+                                  denied_routes=dec.denied_routes, egress=dec.egress_permitted,
+                                  raised_by=f"knowledge source {ret['source_id']}")
+                if ret:
+                    ctx.retrieval = ret
+                    model_messages = kb_messages(model_messages, ret)
+                    source_id, source_hash = ret["source_id"], ret["source_version"]
+                    ctx.stage("retrieval", "ok", source=source_id, version=source_hash,
+                              records=[f"{r['document']} ({r['similarity']})" for r in ret["records"]],
+                              top_sim=round(ret["top_sim"], 4), data_class=ret["data_class"])
 
         # --- params ---
         max_req = pol.budget.max_tokens_per_request
@@ -741,7 +823,7 @@ class Pipeline:
                       {"decision": Reason.CACHE_INELIGIBLE.value if Reason.CACHE_INELIGIBLE.value in ctx.codes else None,
                        "written_cache_id": ctx.cache_write}),
             "retrieval": ({"source_id": ctx.retrieval["source_id"], "source_version": ctx.retrieval["source_version"],
-                           "records": [r["cveID"] for r in ctx.retrieval["records"]], "top_sim": ctx.retrieval["top_sim"],
+                           "records": [r.get("cveID") or r.get("document") for r in ctx.retrieval["records"]], "top_sim": ctx.retrieval["top_sim"],
                            "coverage": ctx.retrieval["coverage"], "exact_match": ctx.retrieval["exact_match"]}
                           if ctx.retrieval else None),
             "model": ({"tier": g.tier, "model": g.model, "revision": (svc.local.revision if g.tier == "local" else

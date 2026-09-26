@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ChevronLeft, ChevronRight, Filter, X } from "lucide-react";
-import { get } from "../api/client";
+import { ChevronLeft, ChevronRight, Download, Filter, X } from "lucide-react";
+import { download, get } from "../api/client";
 import type { RequestsResp } from "../api/types";
 import { Badge, Card, DataClassBadge, PageHeader, ReasonBadge, RouteBadge, StateView } from "../components/ui";
 import { fmtDateTime, fmtInt, fmtMs, fmtUsd, ROUTE_LABEL } from "../lib/format";
@@ -47,7 +47,13 @@ export default function Requests() {
 
   return (
     <>
-      <PageHeader eyebrow="Audit" title="Requests" subtitle="Every request the gateway has decided — answered or denied — with its sealed receipt." />
+      <PageHeader eyebrow="Audit" title="Requests" subtitle="Every request the gateway has decided — answered or denied — with its sealed receipt."
+        right={<>
+          <button className="btn-ghost" onClick={() => download(`/api/export/requests.csv${range ? `?since=${Math.floor(Date.now() / 1000 - range)}` : ""}`, "nanogate-requests.csv")}>
+            <Download className="h-4 w-4" />Export CSV</button>
+          <button className="btn-ghost" onClick={() => download(`/api/export/receipts.jsonl${range ? `?since=${Math.floor(Date.now() / 1000 - range)}` : ""}`, "nanogate-receipts.jsonl")}>
+            <Download className="h-4 w-4" />Receipts</button>
+        </>} />
       <Card className="mb-6 p-4">
         <div className="flex flex-wrap items-center gap-2">
           <Filter className="h-4 w-4 text-ink-3" />

@@ -90,6 +90,26 @@ async def chat_completions(req: ChatCompletionRequest, request: Request, authori
         return JSONResponse(e.body(), status_code=e.status, headers=e.headers)
 
 
+class EmbeddingRequest(BaseModel):
+    model_config = ConfigDict(extra="allow", json_schema_extra={"example": {"model": "nanogate-embed", "input": ["reset VPN"]}})
+    input: str | list[str]
+    model: str = "nanogate-embed"
+
+
+@router.post("/v1/embeddings", tags=["OpenAI-compatible"], responses=RESPONSES,
+             summary="Create embeddings on-device (384-dim bge-small; DLP-checked, receipted)")
+async def embeddings(req: EmbeddingRequest, request: Request, authorization: str | None = Header(None),
+                     x_api_key: str | None = Header(None)):
+    body = req.model_dump()
+    pipe: Pipeline = request.app.state.pipeline
+    try:
+        ident = get_identity(request, authorization, x_api_key, {"messages": []})
+        resp, headers = await pipe.embed(ident, body)
+        return JSONResponse(resp, headers=headers)
+    except GatewayError as e:
+        return JSONResponse(e.body(), status_code=e.status, headers=e.headers)
+
+
 @router.get("/v1/models", tags=["OpenAI-compatible"], summary="List routable models")
 async def list_models(request: Request, authorization: str | None = Header(None), x_api_key: str | None = Header(None)):
     svc = request.app.state.svc
@@ -107,6 +127,8 @@ async def list_models(request: Request, authorization: str | None = Header(None)
     if svc.local_large:
         data.append({"id": "nanogate-local-large", "object": "model", "created": created, "owned_by": "nanogate",
                      "backing_model": svc.local_large.model, "state": svc.local_large.status.get("state")})
+    data.append({"id": "nanogate-embed", "object": "model", "created": created, "owned_by": "nanogate",
+                 "backing_model": svc.settings.embedding_model, "endpoint": "/v1/embeddings"})
     data.append({"id": "nanogate-remote", "object": "model", "created": created, "owned_by": "nanogate",
                  "mode": svc.remote.mode, "label": svc.remote.label})
     return {"object": "list", "data": data}

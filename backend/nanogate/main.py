@@ -13,7 +13,7 @@ from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from prometheus_client import generate_latest
 
-from . import api_admin, api_openai
+from . import api_admin, api_openai, api_ops
 from .auth import Identity
 from .logging_setup import setup_logging
 from .metrics import REGISTRY
@@ -70,7 +70,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         await svc.stop()
 
     app = FastAPI(title="NanoGate", version="1.0.0", description=DESCRIPTION, lifespan=lifespan,
-                  openapi_tags=[{"name": "OpenAI-compatible"}, {"name": "Dashboard"}, {"name": "Health"}])
+                  openapi_tags=[{"name": "OpenAI-compatible"}, {"name": "Dashboard"}, {"name": "Operations"}, {"name": "Health"}])
     app.add_middleware(CORSMiddleware, allow_origins=[o.strip() for o in settings.cors_origins.split(",") if o.strip()],
                        allow_credentials=False, allow_methods=["*"], allow_headers=["*"],
                        expose_headers=["x-nanogate-request-id", "x-nanogate-receipt-id", "x-nanogate-route",
@@ -78,6 +78,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                                        "x-nanogate-data-class", "x-nanogate-estimated-cost-usd"])
     app.include_router(api_openai.router)
     app.include_router(api_admin.router)
+    app.include_router(api_ops.router)
 
     @app.exception_handler(RequestValidationError)
     async def validation(request: Request, exc: RequestValidationError):
