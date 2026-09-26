@@ -127,14 +127,23 @@ async def run(args) -> None:
                 raise SystemExit(f"{out} holds rows from model '{row.get('model')}', not '{model}': "
                                  f"move it to {OUT / 'archive'} and rerun")
             done.add(row["id"])
+    if args.only_split:
+        # same SHA-256 grouping as train_router.py; used for the local-large baseline on the test split only
+        import hashlib as _h
+
+        def _split(g):
+            h = int(_h.sha256(g.encode()).hexdigest(), 16) % 100
+            return "train" if h < 60 else "calibration" if h < 80 else "test"
+        items = [it for it in items if _split(it["group"]) == args.only_split]
     todo = [it for it in items if it["id"] not in done]
     print(f"tier={args.tier} model={model} items={len(items)} todo={len(todo)}", flush=True)
     lock = asyncio.Lock()
     t_start = time.time()
     n_done = 0
+    n_err = 0
 
     async def one(it: dict) -> None:
-        nonlocal n_done
+        nonlocal n_done, n_err
         messages = [{"role": "user", "content": it["prompt"]}]
         retrieval = None
         if it["source"] == "cisa_kev":
@@ -145,6 +154,7 @@ async def run(args) -> None:
             res = await adapter.generate(messages, params)
         except Exception as e:
             print(f"  error {it['id']}: {e}", flush=True)
+            n_err += 1
             return
         feats = rf.extract(messages, params, res,
                            retrieval={k: retrieval.get(k) for k in ("top_sim", "margin", "coverage", "verifier", "sources", "age_days", "mismatch")} if retrieval else None,
@@ -174,7 +184,10 @@ async def run(args) -> None:
 
     await asyncio.gather(*(guarded(it) for it in todo))
     await adapter.aclose()
-    print("done", flush=True)
+    print(f"done ({n_done} written, {n_err} errors)", flush=True)
+    if n_err > 0.02 * max(1, len(todo)):
+        # missing rows would silently shrink and bias the training set: fail so the pipeline step is retried
+        raise SystemExit(f"{n_err} of {len(todo)} generations failed; rerun to resume")
 
 
 if __name__ == "__main__":
@@ -184,4 +197,6 @@ if __name__ == "__main__":
     ap.add_argument("--n-gsm8k", type=int, default=400)
     ap.add_argument("--n-kev", type=int, default=400)
     ap.add_argument("--concurrency", type=int, default=4)
+    ap.add_argument("--only-split", choices=["train", "calibration", "test"], default=None,
+                    help="restrict to one split (same SHA-256 grouping as train_router.py); used for the large-tier test baseline")
     asyncio.run(run(ap.parse_args()))

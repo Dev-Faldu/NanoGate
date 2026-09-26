@@ -3,7 +3,7 @@
 ## Before the judges arrive (10 min)
 1. Power: ZGX Nano on its own wall socket with the original HP adapter (see LIMITATIONS: power interruptions under GPU load).
 2. `make doctor` — every required line OK.
-3. `make demo` — starts the vLLM servers + gateway, waits for `/readyz`, warms the model, runs the six beats once, prints URLs.
+3. `make demo` — starts the model servers (HP Z Runtime / vLLM) + gateway, waits for `/readyz`, warms the model, runs the six beats once, prints URLs.
 4. Open `http://127.0.0.1:8080`, sign in with `keys.admin.key` from `var/dev_keys.json` (do not show the file on screen).
 5. `make offline-test` once so Infrastructure shows a real, timestamped offline verdict.
 6. Keep a terminal ready with `examples/openai_client.py` (`NANOGATE_API_KEY` exported from `app:acme/it`).
@@ -26,7 +26,7 @@ Open the receipt → **Verify integrity** (SEALED) → **Run tamper test** (INTE
 Then RESULTS.md: every number with its run id, including the weak ones.
 
 ## If something fails
-- Model unavailable → the UI says so; `scripts/runtime.sh status`, then `scripts/runtime.sh start` (logs in
-  `.runtime/logs/vllm-*.log`), then `make doctor`.
+- Model unavailable → the UI says so; `scripts/runtime.sh status` / `zrt status`, then `scripts/runtime.sh start`
+  (logs in `.runtime/logs/vllm-*.log` and the paths `zrt status` prints), then `make doctor`.
 - Router artifacts missing → Router Lab shows "not trained"; requests still work with `ROUTER_UNAVAILABLE`.
 - Never re-run a beat to get a "better" outcome on stage; explain the receipt instead.

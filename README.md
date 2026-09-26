@@ -21,7 +21,7 @@ it into a tamper-evident receipt that a CISO, CFO or auditor can verify.
 ## What runs where (all on the ZGX Nano)
 | Component | Implementation |
 |---|---|
-| Local inference | vLLM (CUDA 13) on the NVIDIA GB10, one server per tier — `Qwen/Qwen2.5-3B-Instruct` on :8000 (default tier), `Qwen/Qwen2.5-14B-Instruct` on :8001 (escalation tier), BF16 |
+| Local inference | vLLM (CUDA 13) on the NVIDIA GB10 via HP Z Runtime — `hf:Qwen/Qwen2.5-3B-Instruct` (default tier) and `hf:Qwen/Qwen2.5-14B-Instruct` (escalation tier), BF16, one proxy on :8000 (project-local vLLM: :8000/:8001) |
 | Gateway | FastAPI (`backend/nanogate`), SQLite, JSON logs, Prometheus `/metrics`, SSE `/api/events` |
 | Verified cache | `BAAI/bge-small-en-v1.5` retrieval + `cross-encoder/nli-deberta-v3-base` NLI verifier + slot checks, tenant-safe namespaces |
 | Router | Logistic regression + isotonic calibration over request/retrieval/generation/system features (trained on graded local answers) |
@@ -32,12 +32,12 @@ it into a tamper-evident receipt that a CISO, CFO or auditor can verify.
 
 ## Quick start
 ```bash
-make setup        # user-space: venv, Node, vLLM, model weights, UI deps, API keys (no root)
+make setup        # user-space: venv, Node, vLLM (or HP Z Runtime), model weights, UI deps, API keys (no root)
 make seed-data    # public datasets with provenance + synthetic security data
 make doctor       # hardware, CUDA, model, artifacts, ports, telemetry
 make router-data  # real local inference over public data (GPU)
 make train-router # grouped split, isotonic calibration, validation threshold
-make start        # vLLM servers + gateway on http://127.0.0.1:8080 (API + dashboard)
+make start        # model servers (ZRT/vLLM) + gateway on http://127.0.0.1:8080 (API + dashboard)
 make demo         # validate → start → wait ready → six real demo beats
 ```
 Admin key for the dashboard: `var/dev_keys.json` → `keys.admin.key` (mode 0600, never printed by any command).
@@ -63,7 +63,17 @@ laptop's Tailscale IP (find it with `tailscale status`), then open `http://<zgx-
 Other peers are refused and logged; every request still needs an API key. (VS Code port forwarding also works when the tunnel is healthy.)
 
 ## ZGX / model setup notes
-- GB10 is compute capability 12.1; vLLM runs from its own venv (`.runtime/vllm`, CUDA 13 wheels) so its torch pin never
+- **HP Z Runtime (recommended on the ZGX Nano).** ZRT (`/snap/bin/zrt`) wraps vLLM and serves every model behind one
+  OpenAI-compatible proxy. One-time setup (the ZRT default port 8080 is the gateway's):
+  ```bash
+  export HF_TOKEN=...                        # only for gated Hugging Face repos; never commit it
+  zrt config set proxy.port 8000
+  ```
+  Put the `hf:` model names from `.env.example` in `.env`. Then `scripts/runtime.sh start` runs
+  `zrt serve hf:Qwen/Qwen2.5-3B-Instruct` and `zrt serve hf:Qwen/Qwen2.5-14B-Instruct`, both on :8000. `zrt status`
+  shows the services, memory use and log paths. The model revision shown in receipts is the HF commit sha, or the
+  sha256 of ZRT's `.zrt-manifest`.
+- GB10 is compute capability 12.1. Without ZRT, vLLM runs from its own venv (`.runtime/vllm`, CUDA 13 wheels) so its torch pin never
   conflicts with the gateway's. `scripts/runtime.sh start|stop|restart|status [local|large]` manages both servers;
   memory shares, ports and context length are `VLLM_*` settings in `.env.example`. First start compiles kernels (minutes).
 - After changing the runtime or model weights, rerun `make router-data && make train-router`: the router's logprob

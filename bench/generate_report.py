@@ -14,7 +14,7 @@ from common import RESULTS, ROOT, new_run, write
 def latest(fname: str) -> tuple[dict | None, str | None]:
     for p in sorted(RESULTS.glob("*"), reverse=True):
         f = p / fname
-        if f.exists():
+        if f.exists() and not (p / "INVALID.json").exists():   # see validate_run.py
             return json.loads(f.read_text()), p.name
     return None, None
 

@@ -25,11 +25,13 @@ setup: ## Install everything in user space (venv, node, vLLM, models, UI deps, k
 	@.venv/bin/python -m spacy download en_core_web_sm -q >/dev/null || true
 	@mkdir -p .runtime/node .runtime/logs
 	@test -x .runtime/node/bin/node || curl -sL https://nodejs.org/dist/$(NODE_VERSION)/node-$(NODE_VERSION)-linux-arm64.tar.xz | tar -xJ -C .runtime/node --strip-components=1
-	@# vLLM gets its own venv: it pins its own torch build, separate from the gateway's
-	@test -x .runtime/vllm/bin/vllm || (python3 -m venv .runtime/vllm && .runtime/vllm/bin/pip install -q --upgrade pip && \
-		.runtime/vllm/bin/pip install -q --extra-index-url https://download.pytorch.org/whl/cu130 "$(VLLM_SPEC)")
-	@$(HF) $(PY) -c "from huggingface_hub import snapshot_download as d; [d(m) for m in ('$(LOCAL_MODEL)', '$(LARGE_MODEL)')]"
-	@LOCAL_MODEL_NAME=$(LOCAL_MODEL) LOCAL_LARGE_MODEL_NAME=$(LARGE_MODEL) scripts/runtime.sh start
+	@# HP Z Runtime (zrt) present: it owns vLLM and the weights (scripts/runtime.sh uses it for hf: model names).
+	@# Otherwise vLLM gets its own venv: it pins its own torch build, separate from the gateway's.
+	@if command -v zrt >/dev/null; then echo "vLLM: using HP Z Runtime ($$(command -v zrt))"; else \
+		test -x .runtime/vllm/bin/vllm || (python3 -m venv .runtime/vllm && .runtime/vllm/bin/pip install -q --upgrade pip && \
+		.runtime/vllm/bin/pip install -q --extra-index-url https://download.pytorch.org/whl/cu130 "$(VLLM_SPEC)") && \
+		$(HF) $(PY) -c "from huggingface_hub import snapshot_download as d; [d(m) for m in ('$(LOCAL_MODEL)', '$(LARGE_MODEL)')]"; fi
+	@scripts/runtime.sh start
 	@$(PY) scripts/bootstrap_keys.py
 	@cd frontend && $(NPM) install --silent
 	@# download-only: load on CPU so setup never needs a GPU context

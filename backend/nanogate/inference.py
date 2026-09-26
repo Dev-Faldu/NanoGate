@@ -95,17 +95,42 @@ def parse_prometheus(text: str, model: str) -> dict[str, float]:
     return out
 
 
+ZRT_MODELS = Path(os.environ.get("ZRT_MODELS_DIR", "/opt/hp/zrt/models"))
+
+
+def _zrt_snapshot(model_id: str) -> tuple[Path, dict[str, Any]] | None:
+    """HP Z Runtime model cache: <ZRT_MODELS>/hf/<org>/<model>/<revision>/ with a .zrt-manifest.
+    ZRT does not record the git commit, so the revision is the SHA-256 of its file manifest."""
+    import hashlib
+    ref = model_id.split(":", 1)[1] if model_id.startswith("hf:") else model_id
+    repo, _, rev = ref.partition("@")
+    snap = ZRT_MODELS / "hf" / repo / (rev or "main")
+    manifest = snap / ".zrt-manifest"
+    if not manifest.exists():
+        return None
+    digest = "zrt-manifest-sha256:" + hashlib.sha256(manifest.read_bytes()).hexdigest()
+    return snap, {"digest": digest, "source": f"HP Z Runtime cache ({snap})", "revision_label": rev or "main",
+                  "modified_at": datetime.fromtimestamp(manifest.stat().st_mtime, timezone.utc).isoformat()}
+
+
 def hf_snapshot_info(repo: str) -> dict[str, Any]:
-    """Identity of the weights vLLM loaded, read from the shared HF cache (HF_HOME): commit sha, dtype,
-    quantization method, parameter count (from the safetensors index) and size on disk."""
+    """Identity of the weights vLLM loaded: dtype, quantization method, parameter count (from the safetensors
+    index) and size on disk. Reads the shared HF cache (HF_HOME) or, for ZRT-served models ("hf:org/model"),
+    the HP Z Runtime model cache."""
+    plain = repo.split(":", 1)[1] if repo.startswith("hf:") else repo
+    plain = plain.partition("@")[0]
     repo_dir = Path(os.environ.get("HF_HOME", ROOT / ".runtime" / "hf")) / "hub" / \
-        ("models--" + repo.replace("/", "--"))
+        ("models--" + plain.replace("/", "--"))
     ref = repo_dir / "refs" / "main"
-    if not ref.exists():
-        return {}
-    sha = ref.read_text().strip()
-    snap = repo_dir / "snapshots" / sha
-    info: dict[str, Any] = {"digest": sha, "modified_at": datetime.fromtimestamp(ref.stat().st_mtime, timezone.utc).isoformat()}
+    if ref.exists():
+        sha = ref.read_text().strip()
+        snap = repo_dir / "snapshots" / sha
+        info: dict[str, Any] = {"digest": sha, "modified_at": datetime.fromtimestamp(ref.stat().st_mtime, timezone.utc).isoformat()}
+    else:
+        z = _zrt_snapshot(repo)
+        if z is None:
+            return {}
+        snap, info = z
     try:
         cfg = json.loads((snap / "config.json").read_text())
         dtype = cfg.get("torch_dtype") or cfg.get("dtype")

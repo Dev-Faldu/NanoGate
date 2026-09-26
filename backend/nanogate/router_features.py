@@ -11,7 +11,7 @@ from typing import Any
 
 from .inference import GenerationResult, logprob_stats
 
-SCHEMA_VERSION = "rf-1.1"
+SCHEMA_VERSION = "rf-1.2"
 
 INTENTS = ["mcq", "math", "code", "lookup", "howto", "general"]
 DATA_CLASSES = ["Public", "Internal", "Confidential", "Restricted", "Secret"]
@@ -62,8 +62,11 @@ NUMERIC_FEATURES: list[tuple[str, bool, float]] = [
     ("gen_refusal", False, 0.0), ("gen_hedge_rate", False, 0.0), ("gen_truncated_ctx", False, 0.0),
     ("gen_answer_marker", False, 0.0), ("gen_self_contradiction", False, 0.0),
     ("gen_answer_logprob", True, 0.0), ("gen_answer_margin", True, 0.0),
-    ("sys_queue_depth", True, 0.0), ("sys_ttft_log", True, 0.0), ("sys_mem_pressure", True, 0.0),
 ]
+# System-state signals (queue depth, TTFT, memory pressure) are still extracted and written to receipts, but are NOT
+# model inputs: they describe the machine, not the answer, and in rf-1.1 they leaked data-collection conditions
+# (memory pressure dominated the logit and flipped decisions when the runtime changed). Removed in rf-1.2.
+SYSTEM_ONLY = ("sys_queue_depth", "sys_ttft_log", "sys_mem_pressure")
 CATEGORICAL = {"intent": INTENTS, "data_class": DATA_CLASSES}
 
 

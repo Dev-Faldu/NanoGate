@@ -29,7 +29,7 @@ TIMEFRAME = re.compile(r"\b(today|yesterday|tomorrow|last (?:week|month|year|qua
 NUMBER = re.compile(r"\b\d+(?:\.\d+)?\b")
 CVE = re.compile(r"CVE-\d{4}-\d{4,}", re.I)
 CREDENTIAL_OBJ = re.compile(r"\b(password|passcode|passphrase|credential|credentials|pin|mfa|2fa|otp|token|secret|"
-                            r"private key|ssh key|api key|badge)\b", re.I)
+                            r"private key|ssh key|api key|badge|(?:two|multi|2)[- ]?(?:factor|step)(?: authentication| verification)?)\b", re.I)
 _MAKE = r"\b(?:write|draft|compose|create|generate|produce|give me|prepare|format|output|return|reply with)\b[^.?!]{0,40}"
 OUTPUT_TYPE = {   # requested FORM of the answer (not a topic): "draft an email", "as a table", "in JSON"
     "email": re.compile(_MAKE + r"\b(?:e-?mail|letter|memo|message)\b", re.I),

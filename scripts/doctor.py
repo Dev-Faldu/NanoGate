@@ -67,7 +67,7 @@ def main() -> int:
         check("local model endpoint", True, base)
         check("local model ready", model in ids, f"{model} {'listed' if model in ids else 'NOT listed: check LOCAL_MODEL_NAME / scripts/runtime.sh'}")
     except Exception as e:
-        check("local model endpoint", False, f"{base} unreachable ({type(e).__name__}); start with scripts/runtime.sh start (vLLM)")
+        check("local model endpoint", False, f"{base} unreachable ({type(e).__name__}); start with scripts/runtime.sh start (ZRT or vLLM)")
         check("local model ready", False, "endpoint down")
     large_base = os.environ.get("LOCAL_LARGE_MODEL_BASE_URL", "http://127.0.0.1:8001/v1")
     large = os.environ.get("LOCAL_LARGE_MODEL_NAME", "Qwen/Qwen2.5-14B-Instruct")
