@@ -8,37 +8,170 @@
 @layer base {
   html { color-scheme: light; }
   body {
-    @apply bg-ivory text-ink font-sans antialiased;
+    @apply text-ink font-sans antialiased;
+    background: #fbfaf8;
     font-feature-settings: "cv11", "ss01";
-    background-image:
-      radial-gradient(1200px 600px at 85% -10%, rgba(230, 233, 251, 0.55), transparent 60%),
-      radial-gradient(900px 500px at -10% 10%, rgba(225, 245, 236, 0.45), transparent 60%);
-    background-attachment: fixed;
+  }
+  /* Very light pastel sky behind all the glass: the product's own soft tints, drifting slowly. */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: -25%;
+    z-index: -1;
+    pointer-events: none;
+    background:
+      radial-gradient(38% 42% at 78% 12%, rgba(214, 220, 250, 0.85), transparent 70%),
+      radial-gradient(34% 40% at 12% 28%, rgba(212, 241, 228, 0.80), transparent 70%),
+      radial-gradient(30% 36% at 62% 70%, rgba(233, 224, 249, 0.75), transparent 70%),
+      radial-gradient(28% 34% at 22% 88%, rgba(212, 238, 244, 0.70), transparent 70%),
+      radial-gradient(22% 26% at 94% 86%, rgba(250, 228, 232, 0.55), transparent 70%);
+    animation: sky-drift 60s ease-in-out infinite alternate;
   }
   :focus-visible { @apply outline-none ring-2 ring-peri ring-offset-2 ring-offset-ivory; }
   ::selection { background: #e6e9fb; }
 }
 
 @layer components {
-  .panel {
-    @apply rounded-card border border-line/80 bg-white/75 shadow-soft backdrop-blur-md;
+  /* ---- glass surfaces ---- */
+  .glass-surface {
+    background: linear-gradient(180deg, rgba(255,255,255,0.74) 0%, rgba(255,255,255,0.52) 100%);
+    backdrop-filter: blur(20px) saturate(165%);
+    -webkit-backdrop-filter: blur(20px) saturate(165%);
+    border: 1px solid rgba(255,255,255,0.78);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), 0 1px 2px rgba(15,27,51,0.035), 0 14px 36px -20px rgba(15,27,51,0.16);
   }
-  .panel-hover { @apply transition-all duration-180 hover:shadow-lift hover:border-line; }
+  .panel { @apply glass-surface relative rounded-[20px]; }
+  .panel-hover { @apply transition-shadow duration-180; }
+  .panel-hover:hover { box-shadow: inset 0 1px 0 #fff, 0 2px 4px rgba(15,27,51,0.04), 0 22px 48px -22px rgba(15,27,51,0.24); }
+  .glass-chrome {
+    background: rgba(255,255,255,0.42);
+    backdrop-filter: blur(24px) saturate(170%);
+    -webkit-backdrop-filter: blur(24px) saturate(170%);
+  }
+  .glass-menu {
+    @apply rounded-2xl p-3;
+    background: linear-gradient(180deg, rgba(255,255,255,0.94), rgba(255,255,255,0.86));
+    backdrop-filter: blur(24px) saturate(170%);
+    -webkit-backdrop-filter: blur(24px) saturate(170%);
+    border: 1px solid rgba(255,255,255,0.9);
+    box-shadow: inset 0 1px 0 #fff, 0 0 0 1px rgba(15,27,51,0.04), 0 2px 6px rgba(15,27,51,0.05), 0 24px 56px -24px rgba(15,27,51,0.28);
+  }
   .eyebrow { @apply text-[11px] font-semibold uppercase tracking-[0.12em] text-ink-3; }
   .num { font-variant-numeric: tabular-nums; }
   .mono { @apply font-mono text-[12px]; }
   .btn {
-    @apply inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-colors duration-180
+    @apply inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-all duration-180
            disabled:cursor-not-allowed disabled:opacity-50;
   }
-  .btn-primary { @apply btn bg-ink text-white hover:bg-ink/90; }
-  .btn-ghost { @apply btn border border-line bg-white/70 text-ink hover:bg-white; }
-  .input {
-    @apply w-full rounded-xl border border-line bg-white/80 px-3 py-2 text-sm text-ink placeholder:text-ink-3
-           transition-colors duration-180 focus:border-peri focus:outline-none focus:ring-2 focus:ring-peri/20;
+  .btn-primary {
+    @apply btn text-white hover:-translate-y-px disabled:hover:translate-y-0;
+    background: linear-gradient(180deg, #22304f, #0f1b33);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 16px -8px rgba(15,27,51,0.5);
   }
+  .btn-ghost {
+    @apply btn border border-white/80 bg-white/55 text-ink backdrop-blur-md hover:bg-white/90;
+    box-shadow: inset 0 1px 0 #fff, 0 1px 2px rgba(15,27,51,0.06);
+  }
+  .input {
+    @apply w-full rounded-xl border border-white/80 bg-white/55 px-3 py-2 text-sm text-ink placeholder:text-ink-3
+           backdrop-blur-md transition-colors duration-180 hover:bg-white/75
+           focus:border-peri/50 focus:bg-white/90 focus:outline-none focus:ring-2 focus:ring-peri/20;
+    box-shadow: inset 0 1px 2px rgba(15,27,51,0.05), 0 0 0 1px rgba(15,27,51,0.04);
+  }
+
+  /* ---- hover cards: plain-language explanations on hover or keyboard focus.
+         Rendered in a top layer (portal, position: fixed) so no card, tile or scroll container covers or clips them. ---- */
+  .hint { @apply relative outline-none; }
+  .hovercard {
+    @apply glass-menu pointer-events-none fixed z-[70] w-[272px] !p-3.5 text-left text-[12.5px] font-normal leading-relaxed text-ink-2;
+    background: rgba(255,255,255,0.97);
+    animation: hovercard-in 200ms cubic-bezier(.2,.9,.25,1) both;
+  }
+  .hovercard-title { @apply mb-1 text-[12.5px] font-semibold text-ink; }
+  .hovercard-note { @apply mt-2 border-t border-ink/5 pt-2 text-[12px] text-ink-3; }
+
+  /* KPI tiles: a glass bubble rises under the pointer */
+  .tile { @apply relative isolate cursor-default; }
+  .tile::before {
+    content: "";
+    @apply absolute inset-1.5 -z-10 rounded-2xl opacity-0 transition-all duration-200;
+    background: rgba(255,255,255,0.8);
+    box-shadow: inset 0 1px 0 #fff, 0 10px 28px -14px rgba(15,27,51,0.22);
+    transform: scale(0.97);
+  }
+  .tile:hover::before, .tile:focus-visible::before { @apply opacity-100; transform: none; }
+
+  /* decision stages lift slightly under the pointer */
+  .stage { @apply transition-all duration-200; }
+  .hint:hover > .stage, .hint:focus-visible > .stage {
+    @apply -translate-y-0.5 bg-white/80;
+    box-shadow: 0 10px 24px -14px rgba(15,27,51,0.25);
+  }
+
+  /* ---- Try-it: floating launcher + glass popover ---- */
+  .try-fab {
+    @apply fixed bottom-6 right-6 z-40 inline-flex h-14 items-center gap-2.5 rounded-full pl-5 pr-6 text-[14px] font-semibold text-white
+           transition-all duration-180 hover:-translate-y-0.5 active:translate-y-0;
+    background: linear-gradient(180deg, #22304f 0%, #0f1b33 100%);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 0 0 1px rgba(15,27,51,0.9),
+                0 10px 24px -8px rgba(15,27,51,0.45), 0 24px 48px -24px rgba(61,79,184,0.45);
+  }
+  .try-fab:hover {
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 0 0 1px rgba(15,27,51,0.9),
+                0 14px 30px -8px rgba(15,27,51,0.5), 0 30px 56px -24px rgba(61,79,184,0.55);
+  }
+  .try-fab[aria-expanded="true"] { @apply w-14 justify-center px-0; }
+  .glass-pop {
+    @apply fixed bottom-24 right-6 z-40 flex flex-col overflow-hidden;
+    width: min(440px, calc(100vw - 32px));
+    max-height: calc(100vh - 8rem);
+    border-radius: 22px;
+    background: linear-gradient(160deg, rgba(255,255,255,0.84) 0%, rgba(250,248,244,0.72) 100%);
+    backdrop-filter: blur(28px) saturate(170%);
+    -webkit-backdrop-filter: blur(28px) saturate(170%);
+    border: 1px solid rgba(255,255,255,0.8);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,1), 0 0 0 1px rgba(15,27,51,0.04), 0 2px 6px rgba(15,27,51,0.05), 0 28px 64px -24px rgba(15,27,51,0.30);
+    transform-origin: calc(100% - 28px) calc(100% + 40px);
+    transition: opacity 200ms ease, transform 260ms cubic-bezier(.2,.9,.25,1.05), visibility 0s linear 0s;
+  }
+  .glass-pop[data-open="false"] {
+    @apply pointer-events-none invisible opacity-0;
+    transform: translateY(12px) scale(0.94);
+    transition: opacity 160ms ease, transform 200ms ease, visibility 0s linear 200ms;
+  }
+  .glass-pop > .glass-scroll { @apply overflow-y-auto; }
+  .glass-rule {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(15,27,51,0.08) 12%, rgba(15,27,51,0.08) 88%, transparent);
+  }
+  .glass-chip {
+    @apply rounded-full border border-white/80 bg-white/50 px-3 py-1 text-[12px] font-medium text-ink-2
+           transition-colors duration-180 hover:bg-white/90 hover:text-ink;
+    box-shadow: 0 0 0 1px rgba(15,27,51,0.05), 0 1px 2px rgba(15,27,51,0.04);
+  }
+  .glass-chip[aria-pressed="true"] { @apply border-ink bg-ink text-white; }
+  .glass-result { @apply rounded-2xl border border-white/85 bg-white/70 p-4; }
+
+  /* receipt drawer: above the Try-it launcher, solid enough that nothing behind shows through as a blur */
+  .glass-drawer {
+    background: linear-gradient(180deg, rgba(251,250,248,0.96), rgba(251,250,248,0.92));
+    backdrop-filter: blur(28px) saturate(160%);
+    -webkit-backdrop-filter: blur(28px) saturate(160%);
+    box-shadow: -1px 0 0 rgba(255,255,255,0.9), -24px 0 64px -24px rgba(15,27,51,0.28);
+  }
+
   .table-head { @apply px-4 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-3; }
   .table-cell { @apply px-4 py-3 text-sm text-ink; }
+}
+
+@keyframes sky-drift {
+  0%   { transform: translate3d(0, 0, 0) rotate(0deg); }
+  50%  { transform: translate3d(3%, -2%, 0) rotate(4deg); }
+  100% { transform: translate3d(-3%, 3%, 0) rotate(-3deg); }
+}
+@keyframes hovercard-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {

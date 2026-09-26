@@ -35,7 +35,13 @@ export async function api<T>(path: string, init: RequestInit & { json?: unknown 
   }
   const res = await fetch(path, { ...init, headers: { ...headers, ...(init.headers as object) }, body });
   const text = await res.text();
-  const data = text ? JSON.parse(text) : null;
+  let data: any = null;
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    // a proxy or crashed handler answered with a plain-text/HTML body: report the HTTP status, not a SyntaxError
+    if (res.ok) throw new ApiError(res.status, "BAD_RESPONSE", "The server returned a response that is not JSON");
+  }
   if (!res.ok) {
     const d = data?.detail ?? data?.error ?? {};
     if (res.status === 401) setToken(null);

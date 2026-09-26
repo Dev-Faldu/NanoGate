@@ -48,19 +48,19 @@ export default function Shell({ children, onLogout }: { children: ReactNode; onL
 
   return (
     <div className="flex min-h-screen">
-      <aside className="sticky top-0 hidden h-screen w-[248px] shrink-0 flex-col border-r border-line/70 bg-white/55 px-4 py-6 backdrop-blur-md lg:flex">
+      <aside className="glass-chrome sticky top-0 hidden h-screen w-[248px] shrink-0 flex-col border-r border-white/70 px-4 py-6 lg:flex">
         <Logo className="px-2" />
         <nav className="mt-10 flex flex-col gap-1" aria-label="Primary">
           {NAV.map(({ to, label, icon: Icon }) => (
             <NavLink key={to} to={to}
               className={({ isActive }) => clsx("group flex items-center gap-3 rounded-xl px-3 py-2 text-[14px] font-medium transition-colors duration-180",
-                isActive ? "bg-ink text-white shadow-soft" : "text-ink-2 hover:bg-white hover:text-ink")}>
+                isActive ? "bg-ink text-white shadow-soft" : "text-ink-2 hover:translate-x-0.5 hover:bg-white/70 hover:text-ink")}>
               <Icon className="h-[18px] w-[18px]" strokeWidth={1.75} />
               {label}
             </NavLink>
           ))}
         </nav>
-        <div className="mt-auto space-y-3 rounded-2xl border border-line/80 bg-white/70 p-4">
+        <div className="glass-surface mt-auto space-y-3 rounded-2xl p-4">
           <div className="eyebrow">Trusted boundary</div>
           <div className="flex items-center gap-2 text-[13px] text-ink">
             <StatusDot state={deviceOk ? "ok" : "unknown"} />
@@ -73,9 +73,9 @@ export default function Shell({ children, onLogout }: { children: ReactNode; onL
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-20 flex items-center gap-4 border-b border-line/70 bg-ivory/80 px-6 py-3 backdrop-blur-md lg:px-10">
-          <Logo className="lg:hidden" />
-          <form className="relative w-full max-w-md" role="search"
+        <header className="glass-chrome sticky top-0 z-30 flex items-center gap-3 border-b border-white/70 px-4 py-3 sm:gap-4 sm:px-6 lg:px-10">
+          <Logo className="shrink-0 lg:hidden [&>div:last-child]:hidden sm:[&>div:last-child]:block" />
+          <form className="relative min-w-0 flex-1 md:max-w-md" role="search"
             onSubmit={(e) => {
               e.preventDefault();
               const v = q.trim();
@@ -87,18 +87,18 @@ export default function Shell({ children, onLogout }: { children: ReactNode; onL
             <input className="input !rounded-full !pl-9" placeholder="Search request, receipt or reason code" value={q}
               onChange={(e) => setQ(e.target.value)} aria-label="Global search" />
           </form>
-          <div className="ml-auto flex items-center gap-2">
-            <Badge tone={status.data?.app_mode === "demo" ? "warn" : "neutral"} title="APP_MODE">
+          <div className="ml-auto flex shrink-0 items-center gap-2">
+            <Badge className="hidden xl:inline-flex" tone={status.data?.app_mode === "demo" ? "warn" : "neutral"} title="APP_MODE">
               {status.data?.app_mode === "demo" ? "Reproducible demo profile" : status.data?.app_mode ?? "…"}
             </Badge>
             {status.data?.telemetry_mode === "demo" && <Badge tone="bad">Demo telemetry</Badge>}
             <Badge tone={modelState === "ok" ? "good" : modelState === "bad" ? "bad" : "neutral"}
               title={comp.model?.reason ?? comp.model?.model}>
               <Cpu className="h-3 w-3" />
-              {modelState === "ok" ? "Model ready" : modelState === "bad" ? "Model unavailable" : "Model…"}
+              <span className="hidden sm:inline">{modelState === "ok" ? "Model ready" : modelState === "bad" ? "Model unavailable" : "Model…"}</span>
             </Badge>
-            {status.data && <ConnectorBadge mode={status.data.remote?.mode} state={status.data.remote?.state} />}
-            <Badge tone={conn === "live" ? "good" : conn === "reconnecting" ? "warn" : "neutral"} title="Live event stream (SSE)">
+            {status.data && <span className="hidden lg:inline-flex"><ConnectorBadge mode={status.data.remote?.mode} state={status.data.remote?.state} /></span>}
+            <Badge className="hidden md:inline-flex" tone={conn === "live" ? "good" : conn === "reconnecting" ? "warn" : "neutral"} title="Live event stream (SSE)">
               {conn === "live" ? <Radio className="h-3 w-3" /> : <Activity className="h-3 w-3" />}
               {conn === "live" ? "Live" : conn === "reconnecting" ? "Reconnecting" : "Connecting"}
             </Badge>
@@ -107,7 +107,7 @@ export default function Shell({ children, onLogout }: { children: ReactNode; onL
                 <User className="h-4 w-4" />
               </button>
               {menu && (
-                <div className="absolute right-0 top-11 w-64 animate-fadein rounded-2xl border border-line bg-white p-3 shadow-lift">
+                <div className="glass-menu absolute right-0 top-11 w-64 animate-fadein">
                   <div className="eyebrow mb-1">Signed in</div>
                   <div className="text-sm font-medium text-ink">Admin key {me.data?.key_id ?? "…"}</div>
                   <div className="text-[12px] text-ink-3">{me.data ? `${me.data.tenant_id} / ${me.data.department_id} · ${me.data.scopes.join(", ")}` : ""}</div>
@@ -122,14 +122,14 @@ export default function Shell({ children, onLogout }: { children: ReactNode; onL
             </div>
           </div>
         </header>
-        <nav className="flex gap-1 overflow-x-auto border-b border-line/70 px-4 py-2 lg:hidden" aria-label="Primary (compact)">
+        <nav className="glass-chrome flex gap-1 overflow-x-auto border-b border-white/70 px-4 py-2 lg:hidden" aria-label="Primary (compact)">
           {NAV.map(({ to, label }) => (
-            <NavLink key={to} to={to} className={({ isActive }) => clsx("whitespace-nowrap rounded-lg px-3 py-1.5 text-sm", isActive ? "bg-ink text-white" : "text-ink-2")}>
+            <NavLink key={to} to={to} className={({ isActive }) => clsx("whitespace-nowrap rounded-lg px-3 py-1.5 text-sm", isActive ? "bg-ink text-white" : "text-ink-2 hover:bg-white/70")}>
               {label}
             </NavLink>
           ))}
         </nav>
-        <main className="mx-auto w-full max-w-[1480px] flex-1 px-6 py-10 lg:px-10">{children}</main>
+        <main className="mx-auto w-full max-w-[1480px] flex-1 px-4 pb-28 pt-8 sm:px-6 sm:pt-10 lg:px-10">{children}</main>
       </div>
     </div>
   );

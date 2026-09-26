@@ -43,12 +43,12 @@ export default function CachePage() {
         subtitle="Answers are reused only when a second model verifies the new request means the same thing — inside the same tenant, department, policy version and context." />
       {!s && <Card className="mb-6"><StateView kind="unavailable" title="Semantic cache unavailable" detail={q.data.error} /></Card>}
       <Card className="mb-6">
-        <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 [&>*]:border-b [&>*]:border-hair xl:[&>*]:border-b-0">
-          <Stat label="Hit rate" value={fmtPct(verified?.hit_rate)} sub={bm ? `benchmark n=${fmtInt(bm.n_queries)}` : "no benchmark run yet"} prov="Benchmark" />
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))]">
+          <Stat label="Hit rate" value={fmtPct(verified?.hit_rate)} sub={bm ? `benchmark n=${fmtInt(bm.n_queries)}` : "no benchmark run yet"} prov="Benchmark" hint={{ text: "In the benchmark, how often a question could be answered from the cache instead of running the model." }} />
           <Stat label="Verified precision" value={fmtPct(verified?.precision)} sub="served answers that were equivalent" prov="Benchmark" />
-          <Stat label="False-hit rate" value={fmtPct(verified?.false_hit_rate)} sub="non-equivalent served" prov="Benchmark" tone={verified?.false_hit_rate > 0.02 ? "warn" : undefined} />
-          <Stat label="Hard-negative rejection" value={fmtPct(verified?.hard_negative_rejection)} sub={verified ? `${fmtInt(verified.hard_negatives)} hard negatives` : ""} prov="Benchmark" />
-          <Stat label="Cross-tenant leaks" value={bm ? fmtInt(bm.isolation?.cross_tenant_leaks) : "Unavailable"} sub={bm ? `${fmtInt(bm.isolation?.probes)} isolation probes` : ""} prov="Benchmark" tone={bm?.isolation?.cross_tenant_leaks > 0 ? "bad" : undefined} />
+          <Stat label="False-hit rate" value={fmtPct(verified?.false_hit_rate)} sub="non-equivalent served" prov="Benchmark" hint={{ text: "How often the cache served an answer to a question that only looked similar but meant something different. Lower is better." }} tone={verified?.false_hit_rate > 0.02 ? "warn" : undefined} />
+          <Stat hint={{ text: "Tricky look-alike questions, such as \"reset my password\" vs \"reset another employee's password\". This is how often the cache correctly refused to reuse the answer." }} label="Hard-negative rejection" value={fmtPct(verified?.hard_negative_rejection)} sub={verified ? `${fmtInt(verified.hard_negatives)} hard negatives` : ""} prov="Benchmark" />
+          <Stat hint={{ text: "Times one company received a cached answer that belonged to another company in the isolation test. It must be 0." }} label="Cross-tenant leaks" value={bm ? fmtInt(bm.isolation?.cross_tenant_leaks) : "Unavailable"} sub={bm ? `${fmtInt(bm.isolation?.probes)} isolation probes` : ""} prov="Benchmark" tone={bm?.isolation?.cross_tenant_leaks > 0 ? "bad" : undefined} />
           <Stat label="Tokens avoided" value={fmtInt(s?.session_stats?.tokens_avoided)} sub={`${fmtInt(s?.session_stats?.hits)} live hits this session`} prov="Measured" />
         </div>
       </Card>

@@ -28,14 +28,14 @@ function Measured() {
   return (
     <div data-testid="finops-measured">
       <Card className="mb-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7 [&>*]:border-b [&>*]:border-hair xl:[&>*]:border-b-0">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))]">
           <Stat label="Requests" value={fmtInt(d.requests)} sub="answered, last 30 days" prov="Measured" />
           <Stat label="Tokens" value={fmtInt(d.tokens)} sub="metered by the runtime" prov="Measured" />
-          <Stat label="Actual cost" value={fmtUsd(d.actual_cost_usd)} sub="configured rates × tokens" prov="Measured" />
-          <Stat label="Same workload, hosted" value={fmtUsd(d.counterfactual_usd)} sub={`${d.pricing.counterfactual_reference.provider}/${d.pricing.counterfactual_reference.model}`} prov="Measured" />
-          <Stat label="Avoided" value={fmtUsd(Math.max(0, d.counterfactual_usd - d.actual_cost_usd))} sub="counterfactual − actual" prov="Measured" />
+          <Stat label="Actual cost" value={fmtUsd(d.actual_cost_usd)} sub="configured rates × tokens" prov="Measured" hint={{ text: "What these requests cost on this device: real token counts multiplied by the local rates in config/pricing.yaml." }} />
+          <Stat label="Same workload, hosted" value={fmtUsd(d.counterfactual_usd)} sub={`${d.pricing.counterfactual_reference.provider}/${d.pricing.counterfactual_reference.model}`} prov="Measured" hint={{ text: "What the same requests would have cost on the reference hosted AI service, using the same token counts." }} />
+          <Stat label="Avoided" value={fmtUsd(Math.max(0, d.counterfactual_usd - d.actual_cost_usd))} sub="counterfactual − actual" prov="Measured" hint={{ text: "The hosted price minus the actual cost: money not spent because requests were answered here.", note: "A calculation, not an invoice." }} />
           <Stat label="Tokens avoided by cache" value={fmtInt(d.tokens_avoided)} sub={fmtUsd(d.cache_avoided_usd) + " at reference rate"} prov="Measured" />
-          <Stat label="GPU energy" value={d.energy_j ? `${fmtNum(d.energy_j / 3600, 2)} Wh` : "Unavailable"} sub="NVML energy counter" prov="Live device telemetry" />
+          <Stat label="GPU energy" value={d.energy_j ? `${fmtNum(d.energy_j / 3600, 2)} Wh` : "Unavailable"} sub="NVML energy counter" prov="Live device telemetry" hint={{ text: "Electricity the GPU used for this work, read from the GPU's own energy counter." }} />
         </div>
       </Card>
       {d.requests === 0 ? <Card><StateView kind="empty" title="No completed requests in this window" detail="Costs appear once real requests are answered." /></Card> : (

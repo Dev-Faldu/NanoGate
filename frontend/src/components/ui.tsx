@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import clsx from "clsx";
 import {
   AlertTriangle, Check, CircleSlash, Copy, FlaskConical, Globe2, Loader2, Radio, ShieldAlert, Sparkles, WifiOff,
@@ -70,11 +71,56 @@ export function ProvenanceTag({ kind, title }: { kind: Prov; title?: string }) {
   );
 }
 
-export function Stat({ label, value, sub, prov, icon, tone, testid }: {
+/** Explains the thing under the pointer in plain words. The card renders in a top layer (portal, fixed position),
+ *  opens after a short pause on hover or immediately on keyboard focus, flips above when there is no room below,
+ *  and stays inside the viewport. */
+export function Hint({ title, text, note, children, className, as: Tag = "div" }: {
+  title?: ReactNode; text: ReactNode; note?: ReactNode; children: ReactNode; className?: string; as?: "div" | "li" | "span";
+}) {
+  const ref = useRef<HTMLElement>(null);
+  const timer = useRef<number>();
+  const [pos, setPos] = useState<{ left: number; top: number; below: boolean } | null>(null);
+  const place = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const W = 272, H = 150, M = 12;
+    const left = Math.min(Math.max(M, r.left + r.width / 2 - W / 2), window.innerWidth - W - M);
+    const below = r.bottom + 8 + H < window.innerHeight || r.top < H + 16;
+    setPos({ left, top: below ? r.bottom + 8 : r.top - 8, below });
+  }, []);
+  const show = (delay: number) => { window.clearTimeout(timer.current); timer.current = window.setTimeout(place, delay); };
+  const hide = () => { window.clearTimeout(timer.current); setPos(null); };
+  useEffect(() => {
+    if (!pos) return;
+    const close = () => hide();
+    window.addEventListener("scroll", close, true);
+    window.addEventListener("resize", close);
+    return () => { window.removeEventListener("scroll", close, true); window.removeEventListener("resize", close); };
+  }, [pos]);
+  useEffect(() => () => window.clearTimeout(timer.current), []);
+  const El = Tag as any;
+  return (
+    <El ref={ref} tabIndex={0} className={clsx("hint", className)}
+      onMouseEnter={() => show(220)} onMouseLeave={hide} onFocus={() => show(0)} onBlur={hide}>
+      {children}
+      {pos && createPortal(
+        <div role="tooltip" className="hovercard"
+          style={pos.below ? { left: pos.left, top: pos.top } : { left: pos.left, bottom: window.innerHeight - pos.top }}>
+          {title && <div className="hovercard-title">{title}</div>}
+          <div>{text}</div>
+          {note && <div className="hovercard-note">{note}</div>}
+        </div>, document.body)}
+    </El>
+  );
+}
+
+export function Stat({ label, value, sub, prov, icon, tone, testid, hint }: {
   label: string; value: ReactNode; sub?: ReactNode; prov?: Prov; icon?: ReactNode; tone?: "good" | "warn" | "bad"; testid?: string;
+  hint?: { text: ReactNode; note?: ReactNode };
 }) {
   const unavailable = value === "Unavailable";
-  return (
+  const body = (
     <div className="flex min-w-0 flex-col gap-2 px-6 py-5" data-testid={testid}>
       <div className="flex min-w-0 items-center gap-2 text-[12.5px] font-medium text-ink-2">
         {icon && <span className="shrink-0 text-ink-3">{icon}</span>}
@@ -89,6 +135,13 @@ export function Stat({ label, value, sub, prov, icon, tone, testid }: {
         {sub && <div className="min-w-0 truncate text-[12px] text-ink-3" title={typeof sub === "string" ? sub : undefined}>{sub}</div>}
       </div>
     </div>
+  );
+  if (!hint) return body;
+  return (
+    <Hint className="tile min-w-0" title={label} text={hint.text}
+      note={unavailable ? "Shows a number once real requests have flowed through the gateway." : hint.note}>
+      {body}
+    </Hint>
   );
 }
 
@@ -209,11 +262,11 @@ export function Hash({ value, n = 16 }: { value: string | null | undefined; n?: 
 
 export function Tabs<T extends string>({ value, onChange, items }: { value: T; onChange: (v: T) => void; items: { id: T; label: ReactNode }[] }) {
   return (
-    <div role="tablist" className="inline-flex rounded-xl border border-line bg-white/70 p-1">
+    <div role="tablist" className="inline-flex rounded-xl border border-white/80 bg-white/50 p-1 shadow-[0_0_0_1px_rgba(15,27,51,0.05)] backdrop-blur-md">
       {items.map((it) => (
         <button key={it.id} role="tab" aria-selected={value === it.id} onClick={() => onChange(it.id)}
           className={clsx("rounded-lg px-3.5 py-1.5 text-sm font-medium transition-colors duration-180",
-            value === it.id ? "bg-ink text-white shadow-soft" : "text-ink-2 hover:text-ink")}>
+            value === it.id ? "bg-ink text-white shadow-soft" : "text-ink-2 hover:bg-white/80 hover:text-ink")}>
           {it.label}
         </button>
       ))}
@@ -231,7 +284,7 @@ export function ConnectorBadge({ mode, state }: { mode?: string; state?: string 
 
 export function Explainer({ children }: { children: ReactNode }) {
   return (
-    <div className="flex items-start gap-2 rounded-xl border border-hair bg-white/60 px-3 py-2.5 text-[12.5px] leading-relaxed text-ink-2">
+    <div className="flex items-start gap-2 rounded-xl border border-white/80 bg-white/50 px-3 py-2.5 text-[12.5px] leading-relaxed text-ink-2">
       <Sparkles className="mt-0.5 h-3.5 w-3.5 shrink-0 text-peri" />
       <div>{children}</div>
     </div>

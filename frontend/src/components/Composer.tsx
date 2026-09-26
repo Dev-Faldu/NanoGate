@@ -32,6 +32,7 @@ export default function Composer({ onResult }: { onResult?: (r: PlaygroundResult
   const [dept, setDept] = useState("it");
   const [tenant, setTenant] = useState("acme");
   const [text, setText] = useState(DEMO_PROMPTS[0].text);
+  const loaded = DEMO_PROMPTS.find((p) => p.text === text && p.dept === dept)?.label;
   const [last, setLast] = useState<PlaygroundResult | null>(null);
   const [elapsed, setElapsed] = useState<number | null>(null);
   const m = useMutation({
@@ -52,7 +53,7 @@ export default function Composer({ onResult }: { onResult?: (r: PlaygroundResult
     <div className="space-y-4">
       <div className="flex flex-wrap gap-1.5" role="group" aria-label="Demo prompts">
         {DEMO_PROMPTS.map((p) => (
-          <button key={p.label} type="button" className="rounded-full border border-line bg-white/70 px-3 py-1 text-[12px] font-medium text-ink-2 transition-colors duration-180 hover:border-peri/40 hover:text-ink"
+          <button key={p.label} type="button" className="glass-chip" aria-pressed={loaded === p.label}
             onClick={() => { setText(p.text); setDept(p.dept); setTenant("acme"); }}>
             {p.label}
           </button>
@@ -79,7 +80,7 @@ export default function Composer({ onResult }: { onResult?: (r: PlaygroundResult
         {m.isError && <span role="alert" className="text-[13px] text-danger">{String(m.error)}</span>}
       </div>
       {last && (
-        <div className="animate-fadein rounded-2xl border border-line bg-white/80 p-4" data-testid="composer-result">
+        <div className="glass-result animate-fadein" data-testid="composer-result">
           <div className="mb-2 flex flex-wrap items-center gap-2">
             <ReasonBadge code={last.headers["x-nanogate-reason"] || last.error?.code} />
             <RouteBadge route={last.headers["x-nanogate-route"]} />

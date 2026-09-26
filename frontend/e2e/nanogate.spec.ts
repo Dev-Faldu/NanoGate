@@ -30,6 +30,7 @@ test("NanoGate console: real request → receipt → cache → privacy → lab �
   await page.screenshot({ path: `${SHOTS}/01-overview.png`, fullPage: true });
 
   // 3. Send a real request (Local intelligence prompt) through the pipeline
+  await page.getByRole("button", { name: "Try it" }).click();
   await page.getByRole("button", { name: "Local intelligence" }).click();
   await page.getByTestId("send-request").click();
   const result = page.getByTestId("composer-result");

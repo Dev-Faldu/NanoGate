@@ -18,13 +18,13 @@ export default function ReceiptDrawer({ receiptId, onClose }: { receiptId: strin
   if (!receiptId) return null;
   const b = q.data?.body;
   return (
-    <div className="fixed inset-0 z-40 flex justify-end" role="dialog" aria-modal="true" aria-label="Decision receipt">
-      <button className="absolute inset-0 bg-ink/10 backdrop-blur-[2px]" aria-label="Close receipt" onClick={onClose} />
-      <div className="relative h-full w-full max-w-[640px] animate-slidein overflow-y-auto border-l border-line bg-ivory shadow-lift">
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-line bg-ivory/90 px-6 py-4 backdrop-blur">
+    <div className="fixed inset-0 z-50 flex justify-end" role="dialog" aria-modal="true" aria-label="Decision receipt">
+      <button className="absolute inset-0 bg-ink/10 backdrop-blur-[3px]" aria-label="Close receipt" onClick={onClose} />
+      <div className="glass-drawer relative h-full w-full max-w-[640px] animate-slidein overflow-y-auto">
+        <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-ink/5 bg-[#fbfaf8]/90 px-6 py-4 backdrop-blur-md">
           <div>
             <div className="eyebrow">Decision receipt</div>
-            <div className="mono text-ink">{receiptId}</div>
+            <div className="mono truncate text-ink">{receiptId}</div>
           </div>
           <div className="flex items-center gap-2">
             <Link to={`/requests/${receiptId}`} className="btn-ghost !py-1.5" onClick={onClose}>

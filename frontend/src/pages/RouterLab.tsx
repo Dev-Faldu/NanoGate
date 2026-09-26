@@ -60,7 +60,7 @@ export default function RouterLab() {
       {meta && (
         <>
           <Card className="mb-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-6 [&>*]:border-b [&>*]:border-hair">
+            <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))]">
               <Stat label="Model version" value={<span className="text-[18px]">{meta.version}</span>} sub={fmtDateTime(meta.trained_at)} prov="Benchmark" />
               <Stat label="Train samples" value={fmtInt(meta.n_train)} sub="grouped split" prov="Benchmark" />
               <Stat label="Calibration samples" value={fmtInt(meta.n_calibration)} sub={meta.calibration_method} prov="Benchmark" />
@@ -69,7 +69,7 @@ export default function RouterLab() {
               <Stat label="Dataset hash" value={<span className="mono !text-[14px]">{String(meta.dataset_sha256).slice(0, 12)}</span>} sub={meta.dataset_sources?.join(" · ")} prov="Public dataset" />
             </div>
             {ev && (
-              <div className="grid grid-cols-2 md:grid-cols-4 xl:grid-cols-7">
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] border-t border-hair">
                 <Stat label="Local accuracy" value={fmtPct(ev.baselines?.local_only_accuracy)} sub="local-only baseline" prov="Benchmark" />
                 <Stat label="Larger tier accuracy" value={fmtPct(ev.baselines?.large_only_accuracy)} sub={ev.baselines?.large_model ?? "not measured"} prov="Benchmark" />
                 <Stat label="Local coverage" value={fmtPct(ev.methods?.calibrated_lr?.coverage)} sub="at validation threshold" prov="Benchmark" />

@@ -167,9 +167,10 @@ class RealZGXTelemetryProvider:
             return {"unified_total": U(str(e)[:160], "bytes")}
 
     def get_cpu(self) -> dict:
-        la = os.getloadavg()
-        return {"utilization": F(psutil.cpu_percent(interval=None), "%", "psutil.cpu_percent"),
-                "load_avg_1m": F(round(la[0], 2), None, "os.getloadavg")}
+        util = F(psutil.cpu_percent(interval=None), "%", "psutil.cpu_percent")
+        if not hasattr(os, "getloadavg"):   # Windows: no load average
+            return {"utilization": util, "load_avg_1m": U("os.getloadavg not available on this OS", None)}
+        return {"utilization": util, "load_avg_1m": F(round(os.getloadavg()[0], 2), None, "os.getloadavg")}
 
     def get_storage(self, path: str = "/") -> dict:
         try:
