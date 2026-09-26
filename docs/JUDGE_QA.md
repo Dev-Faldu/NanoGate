@@ -46,7 +46,7 @@ is a calculated counterfactual: the same measured tokens at a reference hosted r
 live on a separate Scenario tab built from stated assumptions. We make no guaranteed-savings claim.
 
 **What is actually running on the ZGX Nano?**
-Ollama with Qwen 2.5 3B and 14B on the GB10 GPU (CUDA 13), the gateway (FastAPI), embeddings + NLI verifier (PyTorch,
+vLLM serving Qwen 2.5 3B and 14B (BF16) on the GB10 GPU (CUDA 13), the gateway (FastAPI), embeddings + NLI verifier (PyTorch,
 CUDA-capable), Presidio/spaCy, SQLite, and the dashboard. The Infrastructure page shows the DMI product name, GPU, driver,
 CUDA, unified memory, live NVML power/utilisation/temperature, model digests and placement — each with its source.
 

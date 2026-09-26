@@ -1,13 +1,13 @@
 # NanoGate — local-first AI decision control plane on the HP ZGX Nano.
-# All tooling is user-space (no root): Python venv, Node and Ollama live under .runtime/.
+# All tooling is user-space (no root): Python venv, Node and vLLM live under .runtime/.
 SHELL := /bin/bash
 PY := .venv/bin/python
 NODE_BIN := $(CURDIR)/.runtime/node/bin
 NPM := PATH="$(NODE_BIN):$$PATH" npm
 HF := HF_HOME="$(CURDIR)/.runtime/hf"
-LOCAL_MODEL ?= qwen2.5:3b-instruct
-LARGE_MODEL ?= qwen2.5:14b-instruct
-OLLAMA_VERSION ?= v0.34.3
+LOCAL_MODEL ?= Qwen/Qwen2.5-3B-Instruct
+LARGE_MODEL ?= Qwen/Qwen2.5-14B-Instruct
+VLLM_SPEC ?= vllm
 NODE_VERSION ?= v24.21.0
 
 .PHONY: help doctor setup dev start stop seed-data seed-demo test test-security train-router router-data benchmark \
@@ -19,16 +19,17 @@ help:
 doctor: ## Check hardware, runtimes, models, artifacts, ports, telemetry
 	@$(PY) scripts/doctor.py
 
-setup: ## Install everything in user space (venv, node, ollama, models, UI deps, keys)
+setup: ## Install everything in user space (venv, node, vLLM, models, UI deps, keys)
 	@test -x .venv/bin/python || python3 -m venv .venv
 	@.venv/bin/pip install -q --upgrade pip && .venv/bin/pip install -q -r requirements.txt
 	@.venv/bin/python -m spacy download en_core_web_sm -q >/dev/null || true
-	@mkdir -p .runtime/node .runtime/ollama .runtime/logs
+	@mkdir -p .runtime/node .runtime/logs
 	@test -x .runtime/node/bin/node || curl -sL https://nodejs.org/dist/$(NODE_VERSION)/node-$(NODE_VERSION)-linux-arm64.tar.xz | tar -xJ -C .runtime/node --strip-components=1
-	@test -x .runtime/ollama/bin/ollama || (curl -sL -o .runtime/ollama.tar.zst https://github.com/ollama/ollama/releases/download/$(OLLAMA_VERSION)/ollama-linux-arm64.tar.zst && tar -I zstd -xf .runtime/ollama.tar.zst -C .runtime/ollama && rm .runtime/ollama.tar.zst)
-	@scripts/runtime.sh start
-	@OLLAMA_HOST=127.0.0.1:11434 .runtime/ollama/bin/ollama pull $(LOCAL_MODEL)
-	@OLLAMA_HOST=127.0.0.1:11434 .runtime/ollama/bin/ollama pull $(LARGE_MODEL)
+	@# vLLM gets its own venv: it pins its own torch build, separate from the gateway's
+	@test -x .runtime/vllm/bin/vllm || (python3 -m venv .runtime/vllm && .runtime/vllm/bin/pip install -q --upgrade pip && \
+		.runtime/vllm/bin/pip install -q --extra-index-url https://download.pytorch.org/whl/cu130 "$(VLLM_SPEC)")
+	@$(HF) $(PY) -c "from huggingface_hub import snapshot_download as d; [d(m) for m in ('$(LOCAL_MODEL)', '$(LARGE_MODEL)')]"
+	@LOCAL_MODEL_NAME=$(LOCAL_MODEL) LOCAL_LARGE_MODEL_NAME=$(LARGE_MODEL) scripts/runtime.sh start
 	@$(PY) scripts/bootstrap_keys.py
 	@cd frontend && $(NPM) install --silent
 	@# download-only: load on CPU so setup never needs a GPU context
@@ -50,12 +51,12 @@ build-ui: ## Production build of the dashboard (served by the gateway)
 	@test -d frontend/node_modules || (cd frontend && $(NPM) install --silent)
 	@cd frontend && $(NPM) run build
 
-start: ## Start model runtime + gateway (serves API and built dashboard on :8080)
+start: ## Start vLLM servers + gateway (serves API and built dashboard on :8080)
 	@scripts/runtime.sh start
 	@test -d frontend/dist || $(MAKE) build-ui
 	@scripts/gateway.sh start
 
-stop: ## Stop gateway and model runtime
+stop: ## Stop gateway and vLLM servers
 	@scripts/gateway.sh stop || true
 	@scripts/runtime.sh stop || true
 

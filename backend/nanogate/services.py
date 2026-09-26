@@ -68,7 +68,7 @@ class Services:
         self.local = LocalModelAdapter(s.local_model_base_url, s.local_model_name, s.local_model_api_key,
                                        s.local_model_family, s.local_model_revision, "local", s.local_timeout_s,
                                        s.max_concurrent_inference)
-        self.local_large = LocalModelAdapter(s.local_model_base_url, s.local_large_model_name, s.local_model_api_key,
+        self.local_large = LocalModelAdapter(s.local_large_model_base_url, s.local_large_model_name, s.local_model_api_key,
                                              s.local_model_family, "auto", "local_large", s.local_timeout_s, 2) \
             if s.local_large_model_name else None
         self.remote = RemoteConnector(s.remote_mode, self.egress, s.remote_base_url, s.remote_api_key, s.remote_model,

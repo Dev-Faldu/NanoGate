@@ -4,8 +4,8 @@
 
 | Role | Model | Source | License | Runtime / placement | Revision |
 |---|---|---|---|---|---|
-| Local tier (default route) | `qwen2.5:3b-instruct` (Q4_K_M) | Ollama library (Qwen team, Alibaba) | Qwen Research License (see `ollama show`) | Ollama 0.34.3, CUDA 13 backend, NVIDIA GB10 | runtime digest, shown in Infrastructure and receipts |
-| Local-large tier (escalation) | `qwen2.5:14b-instruct` (Q4_K_M) | Ollama library | Apache-2.0 | same | runtime digest |
+| Local tier (default route) | `Qwen/Qwen2.5-3B-Instruct` (BF16) | Hugging Face (Qwen team, Alibaba) | Qwen Research License | vLLM (CUDA 13), NVIDIA GB10, :8000 | HF commit sha, shown in Infrastructure and receipts |
+| Local-large tier (escalation) | `Qwen/Qwen2.5-14B-Instruct` (BF16) | Hugging Face | Apache-2.0 | vLLM, :8001 | HF commit sha |
 | Cache retrieval embeddings | `BAAI/bge-small-en-v1.5` | Hugging Face | MIT | sentence-transformers, CUDA or CPU | HF snapshot hash (`hf_revision`) |
 | Cache verifier | `cross-encoder/nli-deberta-v3-base` | Hugging Face | Apache-2.0 | sentence-transformers CrossEncoder | HF snapshot hash |
 | DLP NER | spaCy `en_core_web_sm` via Presidio | spaCy / Microsoft | MIT | CPU | spaCy version |

@@ -9,7 +9,7 @@ import { useEvents } from "../api/events";
 import type { Field } from "../api/types";
 import { AXIS, ChartFrame, ChartTooltip, GRID, SERIES } from "../components/charts";
 import { Badge, Card, CardHeader, ConnectorBadge, KV, PageHeader, ProvenanceTag, StateView, StatusDot } from "../components/ui";
-import { fmtAge, fmtBytes, fmtDateTime, fmtDuration, fmtInt, fmtMs, fmtNum, fmtTime, isNum } from "../lib/format";
+import { fmtAge, fmtBytes, fmtDateTime, fmtDuration, fmtInt, fmtMs, fmtNum, fmtPct, fmtTime, isNum } from "../lib/format";
 
 function FieldCell({ f, fmt }: { f?: Field; fmt?: (v: any) => string }) {
   if (!f) return <span className="text-ink-3">Unavailable</span>;
@@ -209,9 +209,9 @@ export default function Infrastructure() {
                 <KV cols={2} rows={[
                   ["Family", m.details?.family], ["Parameters", m.details?.parameter_size], ["Quantization", m.details?.quantization],
                   ["Context", fmtInt(m.details?.context_length)], ["Revision (digest)", m.revision], ["Runtime", `${m.details?.runtime ?? "—"} ${m.details?.runtime_version ?? ""}`],
-                  ["Placement", m.placement?.loaded ? `loaded · ${fmtBytes(m.placement.size_vram_bytes)} on GPU` : m.placement?.loaded === false ? "not loaded" : "unknown"],
+                  ["Serving", m.placement?.loaded ? `KV cache ${fmtPct(m.placement.kv_cache_usage)} · ${fmtInt(m.placement.requests_running)} running / ${fmtInt(m.placement.requests_waiting)} waiting` : "unknown"],
                   ["Warm-up", fmtMs(m.warmup_ms)], ["Last tokens/s", fmtNum(m.tokens_per_s, 1)], ["Queue / in flight", `${m.queue_depth} / ${m.in_flight}`],
-                  ["Size on disk", fmtBytes(m.details?.size_bytes)], ["Pulled", m.details?.modified_at?.slice(0, 19) ?? "—"],
+                  ["Size on disk", fmtBytes(m.details?.size_bytes)], ["Downloaded", m.details?.modified_at?.slice(0, 19) ?? "—"],
                 ]} />
                 {m.status?.reason && <div className="mt-3 text-[12px] text-danger">{m.status.reason}</div>}
               </div>

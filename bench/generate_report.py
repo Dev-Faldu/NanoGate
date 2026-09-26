@@ -103,6 +103,8 @@ def main():
         cw = load.get("cold_warm") or {}
         if cw.get("available"):
             add("Cold vs warm TTFT", f"{ms(cw['cold']['ttft_ms'])} vs {ms(cw['warm']['ttft_ms'])}", 2, lr_)
+            if cw.get("server_start_ms") is not None:
+                add("Model server cold start (vLLM restart until serving)", ms(cw["server_start_ms"]), 1, lr_)
     else:
         missing.append("Load test (needs real local inference)")
 

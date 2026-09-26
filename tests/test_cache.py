@@ -28,7 +28,7 @@ def cache(svc):
 
 def put(c, svc, q=CANON, source_id=None, source_hash=None, **kw):
     return c.store(q, "Open the VPN app, choose Settings > Reset, then reconnect.", ns(svc, **kw), "Internal", 3600,
-                   "qwen2.5:3b-instruct", 30, 40, source_id, source_hash, "req_test")
+                   "Qwen/Qwen2.5-3B-Instruct", 30, 40, source_id, source_hash, "req_test")
 
 
 def test_true_paraphrase_verified(cache, svc):

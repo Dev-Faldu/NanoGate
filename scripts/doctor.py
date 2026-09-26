@@ -60,17 +60,22 @@ def main() -> int:
     except Exception as e:
         check("telemetry (NVML)", False, f"{type(e).__name__}", required=False)
     import httpx
-    base = os.environ.get("LOCAL_MODEL_BASE_URL", "http://127.0.0.1:11434/v1")
-    model = os.environ.get("LOCAL_MODEL_NAME", "qwen2.5:3b-instruct")
+    base = os.environ.get("LOCAL_MODEL_BASE_URL", "http://127.0.0.1:8000/v1")
+    model = os.environ.get("LOCAL_MODEL_NAME", "Qwen/Qwen2.5-3B-Instruct")
     try:
         ids = [m["id"] for m in httpx.get(f"{base}/models", timeout=3).json()["data"]]
         check("local model endpoint", True, base)
-        check("local model ready", model in ids, f"{model} {'listed' if model in ids else 'NOT listed: run make setup'}")
-        large = os.environ.get("LOCAL_LARGE_MODEL_NAME", "qwen2.5:14b-instruct")
-        check("local-large model", large in ids, large, required=False)
+        check("local model ready", model in ids, f"{model} {'listed' if model in ids else 'NOT listed: check LOCAL_MODEL_NAME / scripts/runtime.sh'}")
     except Exception as e:
-        check("local model endpoint", False, f"{base} unreachable ({type(e).__name__}); start with scripts/runtime.sh start")
+        check("local model endpoint", False, f"{base} unreachable ({type(e).__name__}); start with scripts/runtime.sh start (vLLM)")
         check("local model ready", False, "endpoint down")
+    large_base = os.environ.get("LOCAL_LARGE_MODEL_BASE_URL", "http://127.0.0.1:8001/v1")
+    large = os.environ.get("LOCAL_LARGE_MODEL_NAME", "Qwen/Qwen2.5-14B-Instruct")
+    try:
+        ids = [m["id"] for m in httpx.get(f"{large_base}/models", timeout=3).json()["data"]]
+        check("local-large model", large in ids, f"{large} at {large_base}", required=False)
+    except Exception as e:
+        check("local-large model", False, f"{large_base} unreachable ({type(e).__name__})", required=False)
     du = shutil.disk_usage(ROOT)
     check("disk", du.free > 20e9, f"{du.free / 1e9:.0f} GB free")
     db = ROOT / "var" / "nanogate.db"

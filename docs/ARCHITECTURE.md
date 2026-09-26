@@ -1,7 +1,7 @@
 # Architecture
 
 NanoGate is a single FastAPI process (`backend/nanogate`) in front of a local OpenAI-compatible model runtime
-(Ollama on the GB10 GPU), plus a React dashboard served by the same process. Everything runs on the HP ZGX Nano.
+(vLLM on the GB10 GPU, one server per model tier), plus a React dashboard served by the same process. Everything runs on the HP ZGX Nano.
 
 ```
  Application (OpenAI SDK: base_url + api_key)
@@ -27,7 +27,7 @@ NanoGate is a single FastAPI process (`backend/nanogate`) in front of a local Op
  └──────────────────────────────────────────────────────────────────────────────────────┘
             │ HTTP (loopback)                          ┆ only with an EgressTicket
             ▼                                          ┆
-   Ollama (qwen2.5 3B / 14B) on NVIDIA GB10            ┆  Remote provider (outside trusted boundary)
+   vLLM (Qwen2.5 3B / 14B) on NVIDIA GB10              ┆  Remote provider (outside trusted boundary)
 ```
 
 ## Request lifecycle (`pipeline.py`)
@@ -74,5 +74,5 @@ the SSE stream, benchmark artifacts or `config/scenario.yaml`. Routes: `/overvie
 
 ## Deployment on the ZGX Nano
 No root, no Docker socket was available on the event device, so everything is user-space: `.venv` (torch cu130),
-`.runtime/node`, `.runtime/ollama` (CUDA 13 backend detects the GB10, compute capability 12.1), model weights under
-`.runtime/`. `docker-compose.yml` is provided for hosts where containers are allowed; the model runtime stays native.
+`.runtime/node`, `.runtime/vllm` (own venv, CUDA 13 wheels for the GB10, compute capability 12.1), model weights under
+`.runtime/hf`. `docker-compose.yml` is provided for hosts where containers are allowed; the model runtime stays native.

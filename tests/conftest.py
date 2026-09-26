@@ -19,7 +19,7 @@ os.environ.setdefault("HF_HOME", str(ROOT / ".runtime" / "hf"))
 
 
 def model_up() -> bool:
-    base = os.environ.get("LOCAL_MODEL_BASE_URL", "http://127.0.0.1:11434/v1")
+    base = os.environ.get("LOCAL_MODEL_BASE_URL", "http://127.0.0.1:8000/v1")
     try:
         return httpx.get(f"{base}/models", timeout=2).status_code == 200
     except Exception:

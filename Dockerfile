@@ -1,4 +1,4 @@
-# Gateway + built dashboard. arm64. Model runtime is external (native Ollama on the GB10).
+# Gateway + built dashboard. arm64. Model runtime is external (native vLLM on the GB10).
 FROM node:24-bookworm-slim AS ui
 WORKDIR /ui
 COPY frontend/package.json frontend/package-lock.json ./
